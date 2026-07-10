@@ -1,0 +1,143 @@
+[
+  {
+    "displayId": "TASK-014",
+    "title": "Myntra Home Page Clone",
+    "track": "frontend",
+    "objective": "Build a pixel-perfect, responsive clone of the Myntra desktop homepage.",
+    "techRequirements": ["HTML", "CSS", "JavaScript", "React (optional)"],
+    "mustInclude": [
+      "Sticky nav bar with working dropdown hover states",
+      "Image carousel for the main hero banners",
+      "Dynamic product grid using CSS Grid or Flexbox"
+    ],
+    "submissionNotes": "Public GitHub repo, hosted live via Vercel or GitHub Pages.",
+    "active": true
+  },
+  {
+    "displayId": "TASK-015",
+    "title": "Weather Dashboard",
+    "track": "frontend",
+    "objective": "Build a weather lookup app that calls a public weather API and displays a 5-day forecast.",
+    "techRequirements": ["HTML", "CSS", "JavaScript", "Fetch API"],
+    "mustInclude": [
+      "City search with debounced input",
+      "Current conditions card (temp, humidity, wind)",
+      "5-day forecast strip with icons",
+      "Graceful error state for an invalid city"
+    ],
+    "submissionNotes": "Public GitHub repo, hosted live. API key must not be committed to the repo.",
+    "active": true
+  },
+  {
+    "displayId": "TASK-016",
+    "title": "JavaScript Calculator",
+    "track": "frontend",
+    "objective": "Build a working calculator supporting the four basic operations plus keyboard input.",
+    "techRequirements": ["HTML", "CSS", "Vanilla JavaScript"],
+    "mustInclude": [
+      "Keyboard support, not just on-screen buttons",
+      "Correct operator precedence for chained operations",
+      "Clear/backspace handling without breaking state"
+    ],
+    "submissionNotes": "Public GitHub repo, hosted live.",
+    "active": true
+  },
+  {
+    "displayId": "TASK-017",
+    "title": "Streaming Service Landing Page",
+    "track": "frontend",
+    "objective": "Build a Netflix-style landing/browse page with horizontally scrolling content rows.",
+    "techRequirements": ["HTML", "CSS", "JavaScript", "React (optional)"],
+    "mustInclude": [
+      "Horizontally scrollable rows with hover-to-preview on cards",
+      "Sticky header that changes style on scroll",
+      "Fully responsive down to mobile width"
+    ],
+    "submissionNotes": "Public GitHub repo, hosted live.",
+    "active": true
+  },
+  {
+    "displayId": "TASK-018",
+    "title": "Drag-and-Drop Kanban Board",
+    "track": "frontend",
+    "objective": "Build a Trello-style board where cards can be dragged between columns.",
+    "techRequirements": ["HTML", "CSS", "JavaScript", "Drag-and-drop API or a library"],
+    "mustInclude": [
+      "At least 3 columns (e.g. To Do / In Progress / Done)",
+      "Cards persist their column after a page refresh",
+      "Add and delete card functionality"
+    ],
+    "submissionNotes": "Public GitHub repo, hosted live.",
+    "active": true
+  },
+  {
+    "displayId": "TASK-021",
+    "title": "E-commerce Backend API",
+    "track": "backend",
+    "objective": "Build a REST API covering products, cart, and order creation for a simple store.",
+    "techRequirements": ["Node.js", "Express", "Any database (SQL or NoSQL)"],
+    "mustInclude": [
+      "CRUD endpoints for products",
+      "Cart endpoints (add/remove/update quantity)",
+      "Order creation endpoint that validates stock and cart contents"
+    ],
+    "submissionNotes": "Public GitHub repo with a README documenting every endpoint.",
+    "active": true
+  },
+  {
+    "displayId": "TASK-022",
+    "title": "URL Shortener Service",
+    "track": "backend",
+    "objective": "Build a service that shortens long URLs and redirects visitors to the original.",
+    "techRequirements": ["Node.js", "Express", "Any database"],
+    "mustInclude": [
+      "Collision-safe short-code generation",
+      "Redirect endpoint with correct HTTP status code",
+      "Basic click-count tracking per shortened URL"
+    ],
+    "submissionNotes": "Public GitHub repo, deployed (Render/Railway/Fly.io all fine), README with example requests.",
+    "active": true
+  },
+  {
+    "displayId": "TASK-023",
+    "title": "Blog API with Authentication",
+    "track": "backend",
+    "objective": "Build a REST API for a blog with JWT-based authentication for post creation and editing.",
+    "techRequirements": ["Node.js", "Express", "JWT", "Any database"],
+    "mustInclude": [
+      "Signup/login endpoints issuing a JWT",
+      "Only the post's author can edit or delete it",
+      "Public read endpoints for posts, no auth required"
+    ],
+    "submissionNotes": "Public GitHub repo with a README documenting auth flow and endpoints.",
+    "active": true
+  },
+  {
+    "displayId": "TASK-024",
+    "title": "Real-Time Chat Backend",
+    "track": "backend",
+    "objective": "Build a WebSocket-based backend supporting multiple chat rooms.",
+    "techRequirements": ["Node.js", "Socket.io or ws"],
+    "mustInclude": [
+      "Join/leave room events",
+      "Message broadcast scoped to the correct room only",
+      "Basic reconnect handling"
+    ],
+    "submissionNotes": "Public GitHub repo with setup instructions and a minimal test client.",
+    "active": true
+  },
+  {
+    "displayId": "TASK-025",
+    "title": "Expense Tracker API",
+    "track": "backend",
+    "objective": "Build a REST API to log expenses and return category-wise monthly summaries.",
+    "techRequirements": ["Node.js", "Express", "Any database"],
+    "mustInclude": [
+      "CRUD endpoints for expenses",
+      "Summary endpoint grouped by category and month",
+      "Input validation (amount, date, category required)"
+    ],
+    "submissionNotes": "Public GitHub repo with a README documenting every endpoint.",
+    "active": true
+  }
+]

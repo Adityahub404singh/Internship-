@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Submit Your Work — ShipTasks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<style>
+  :root{
+    --bg: #EDF1F5;
+    --panel: #FFFFFF;
+    --ink: #10151C;
+    --muted: #5B6672;
+    --grid-line: #C7D0D9;
+    --grid-line-soft: #DCE3EA;
+    --indigo: #3F3D9E;
+    --indigo-dark: #302E78;
+    --green: #2E7D5B;
+    --green-bg: #E4F1EA;
+    --amber: #C77D2A;
+    --amber-bg: #FBEBDB;
+    --grey-bg: #E7ECF1;
+    --red: #B23A3A;
+    --red-bg: #F6E3E3;
+    --radius: 4px;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0; min-height:100vh;
+    background: var(--bg);
+    background-image:
+      linear-gradient(var(--grid-line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line-soft) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color: var(--ink); font-family: var(--body); line-height:1.5;
+  }
+  .wrap{ max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+  nav.top{ display:flex; align-items:center; padding: 20px 24px; max-width: 720px; margin: 0 auto; }
+  .logo{ font-family: var(--mono); font-weight:600; font-size:14px; display:flex; align-items:center; gap:8px; }
+  .logo::before{ content:''; width:10px; height:10px; background: var(--green); border-radius:1px; display:inline-block; }
+
+  main{ padding: 20px 24px 80px; }
+  .eyebrow{
+    font-family: var(--mono); font-size: 12px; color: var(--indigo);
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  h1{ font-family: var(--display); font-size: clamp(26px,4vw,34px); margin: 0 0 10px; }
+  .sub{ color: var(--muted); font-size:15px; margin: 0 0 28px; max-width: 560px; }
+
+  /* STEPPER */
+  .stepper{ display:flex; gap:0; margin-bottom: 40px; background: var(--panel); border:1px solid var(--grid-line); border-radius: var(--radius); overflow:hidden; }
+  .step{ flex:1; padding: 14px 16px; border-right: 1px dashed var(--grid-line); }
+  .step:last-child{ border-right:none; }
+  .step-status{ font-family: var(--mono); font-size: 10px; text-transform:uppercase; letter-spacing:0.06em; padding:3px 8px; border-radius: 20px; display:inline-block; margin-bottom:6px; }
+  .step-status.done{ background: var(--green-bg); color: var(--green); }
+  .step-status.active{ background: var(--amber-bg); color: var(--amber); }
+  .step-status.queued{ background: var(--grey-bg); color: var(--muted); }
+  .step p{ margin:0; font-family: var(--display); font-size:13.5px; }
+
+  /* CARD */
+  .card{ background: var(--panel); border: 1px solid var(--grid-line); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+  .card h2{ font-family: var(--display); font-size: 18px; margin: 0 0 6px; }
+  .card .desc{ font-size: 13.5px; color: var(--muted); margin: 0 0 20px; }
+
+  label{ font-family: var(--mono); font-size:11.5px; color: var(--muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:6px; }
+  input{
+    width:100%; font-family: var(--body); font-size: 15px; padding: 11px 12px;
+    border: 1px solid var(--grid-line); border-radius: var(--radius);
+    background: var(--bg); color: var(--ink); margin-bottom: 16px;
+  }
+  input:focus{ outline: 2px solid var(--indigo); outline-offset:1px; }
+
+  .btn{ font-family: var(--mono); font-size: 14px; font-weight:600; padding: 13px 22px; border-radius: var(--radius); border: none; cursor:pointer; }
+  .btn-primary{ background: var(--indigo); color: #fff; }
+  .btn-primary:hover{ background: var(--indigo-dark); }
+  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; }
+  .btn-full{ width:100%; }
+
+  .task-item{ border-top: 1px dashed var(--grid-line); padding-top:18px; margin-top:18px; }
+  .task-item:first-of-type{ border-top:none; margin-top:0; padding-top:0; }
+  .task-item .tid{ font-family: var(--mono); font-size:11px; color: var(--muted); margin-bottom:4px; }
+  .task-item .ttitle{ font-family: var(--display); font-size:15.5px; margin-bottom:12px; }
+
+  .status-msg{ font-family: var(--mono); font-size: 13px; margin-top: 12px; }
+  .status-msg.ok{ color: var(--green); }
+  .status-msg.err{ color: var(--red); }
+
+  .fee-note{ display:flex; gap:10px; align-items:flex-start; margin: 4px 0 20px; padding: 14px 16px; background: var(--grey-bg); border-radius: var(--radius); font-size: 13px; color: var(--muted); }
+  .fee-amount{ font-family: var(--mono); font-weight:600; color: var(--ink); }
+
+  .cert-box{ text-align:center; padding: 12px 0; }
+  .cert-icon{ width:56px; height:56px; border-radius:50%; background: var(--green-bg); color: var(--green); display:flex; align-items:center; justify-content:center; font-size:28px; margin: 0 auto 16px; }
+  .cert-id{ font-family: var(--mono); font-size:12px; color: var(--muted); margin: 10px 0 20px; }
+  .btn-download{ display:inline-block; background: var(--indigo); color:#fff; font-family: var(--mono); font-size:14px; font-weight:600; padding: 13px 22px; border-radius: var(--radius); text-decoration:none; }
+
+  .spinner{ width:18px; height:18px; border: 2px solid var(--grid-line); border-top-color: var(--indigo); border-radius:50%; display:inline-block; animation: spin 0.8s linear infinite; vertical-align:middle; margin-right:8px; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .hidden{ display:none !important; }
+  .center-note{ text-align:center; font-size: 13.5px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="logo">shiptasks.dev</div></nav>
+
+<main class="wrap">
+  <div class="eyebrow">Submission Portal</div>
+  <h1 id="page-title">Submit your work</h1>
+  <p class="sub" id="page-sub">Confirm your email to pull up your assigned tasks.</p>
+
+  <div class="stepper" id="stepper">
+    <div class="step"><span class="step-status active" id="s1-status">Step 1</span><p>Submit work</p></div>
+    <div class="step"><span class="step-status queued" id="s2-status">Step 2</span><p>Pay ₹49</p></div>
+    <div class="step"><span class="step-status queued" id="s3-status">Step 3</span><p>Get certified</p></div>
+  </div>
+
+  <!-- GATE -->
+  <div class="card" id="gate-card">
+    <h2>Confirm it's you</h2>
+    <p class="desc">Enter the email you applied with.</p>
+    <label for="gate-email">Email</label>
+    <input id="gate-email" type="email" required />
+    <button class="btn btn-primary btn-full" id="gate-btn">View my tasks</button>
+    <div class="status-msg" id="gate-msg"></div>
+  </div>
+
+  <!-- TASK SUBMISSION -->
+  <div class="card hidden" id="tasks-card">
+    <h2>Your assigned tasks</h2>
+    <p class="desc">Paste your GitHub repo and live hosted link for each task.</p>
+    <div id="task-list"></div>
+    <button class="btn btn-primary btn-full" id="submit-links-btn" style="margin-top:8px;">Submit all links</button>
+    <div class="status-msg" id="tasks-msg"></div>
+  </div>
+
+  <!-- PAYMENT -->
+  <div class="card hidden" id="payment-card">
+    <h2>Verify &amp; get certified</h2>
+    <p class="desc">Your task links are on file. One last step.</p>
+    <div class="fee-note">💳 One-time <span class="fee-amount">₹49</span> verification fee. This confirms your submission and unlocks your certificate.</div>
+    <button class="btn btn-primary btn-full" id="pay-btn">Pay ₹49 &amp; get certified</button>
+    <div class="status-msg" id="payment-msg"></div>
+  </div>
+
+  <!-- GENERATING -->
+  <div class="card hidden" id="generating-card">
+    <div class="cert-box">
+      <p><span class="spinner"></span>Generating your certificate…</p>
+      <p class="center-note">This usually takes a few seconds. Don't close this tab.</p>
+    </div>
+  </div>
+
+  <!-- CERTIFIED -->
+  <div class="card hidden" id="certified-card">
+    <div class="cert-box">
+      <div class="cert-icon">✓</div>
+      <h2>You're certified</h2>
+      <p class="desc">Your certificate has also been emailed to you.</p>
+      <p class="cert-id" id="cert-id-text"></p>
+      <button class="btn-download" id="cert-download-link" type="button" style="border:none;cursor:pointer;">Download certificate</button>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  // ------------------------------------------------------------------
+  // Same Firebase project as landing-page.html — fill in your real config.
+  //
+  // FREE-TIER VERSION: no Cloud Functions, so:
+  //  - identity check (email match) happens here in the browser, not on a
+  //    trusted server — someone editing JS in devtools could bypass it.
+  //    The appId itself (a long random Firestore ID) is the real gate.
+  //  - Razorpay payment is NOT cryptographically verified (that requires
+  //    your secret key, which must never live in browser code). This marks
+  //    payment as "claimed" — cross-check against your Razorpay dashboard
+  //    before treating someone as paid, if that matters for your use case.
+  //  - The certificate PDF is generated right here in the browser (pdf-lib)
+  //    and downloaded directly — nothing is stored server-side, so there's
+  //    no hosted "certificate link" to share, only the downloaded file.
+  // ------------------------------------------------------------------
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  // Razorpay public Key ID only — never put the Key Secret in browser code.
+  const RAZORPAY_KEY_ID = "YOUR_RAZORPAY_KEY_ID";
+  const CERTIFICATION_FEE_PAISE = 4900; // ₹49
+
+  // EmailJS (optional, free) — leave PUBLIC_KEY as-is to skip.
+  const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY";
+  const EMAILJS_SERVICE_ID = "YOUR_EMAILJS_SERVICE_ID";
+  const EMAILJS_CERT_TEMPLATE_ID = "YOUR_EMAILJS_CERT_TEMPLATE_ID";
+
+  const params = new URLSearchParams(window.location.search);
+  const appId = params.get("app");
+
+  const els = {
+    gateCard: document.getElementById('gate-card'),
+    gateEmail: document.getElementById('gate-email'),
+    gateBtn: document.getElementById('gate-btn'),
+    gateMsg: document.getElementById('gate-msg'),
+    tasksCard: document.getElementById('tasks-card'),
+    taskList: document.getElementById('task-list'),
+    submitLinksBtn: document.getElementById('submit-links-btn'),
+    tasksMsg: document.getElementById('tasks-msg'),
+    paymentCard: document.getElementById('payment-card'),
+    payBtn: document.getElementById('pay-btn'),
+    paymentMsg: document.getElementById('payment-msg'),
+    generatingCard: document.getElementById('generating-card'),
+    certifiedCard: document.getElementById('certified-card'),
+    certIdText: document.getElementById('cert-id-text'),
+    certDownloadLink: document.getElementById('cert-download-link'),
+    s1: document.getElementById('s1-status'),
+    s2: document.getElementById('s2-status'),
+    s3: document.getElementById('s3-status'),
+    pageSub: document.getElementById('page-sub'),
+  };
+
+  let db, fs, firebaseReady = false;
+  let currentAppId = appId, currentApp = null, currentTasks = [];
+
+  async function initFirebase(){
+    if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+      els.gateMsg.className = 'status-msg err';
+      els.gateMsg.textContent = 'Firebase config is a placeholder — fill it in to go live.';
+      return;
+    }
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const app = initializeApp(firebaseConfig);
+    db = fs.getFirestore(app);
+    firebaseReady = true;
+  }
+  initFirebase();
+
+  function showOnly(cardEl){
+    [els.gateCard, els.tasksCard, els.paymentCard, els.generatingCard, els.certifiedCard].forEach(c => c.classList.add('hidden'));
+    cardEl.classList.remove('hidden');
+  }
+
+  function setStepper(step){
+    const cfg = { 1: ['active','queued','queued'], 2: ['done','active','queued'], 3: ['done','done','done'] }[step];
+    [els.s1, els.s2, els.s3].forEach((el, i) => { el.className = `step-status ${cfg[i]}`; });
+  }
+
+  function renderTasks(tasks){
+    els.taskList.innerHTML = tasks.map((t, i) => `
+      <div class="task-item">
+        <div class="tid">${t.displayId}</div>
+        <div class="ttitle">${t.title}</div>
+        <label for="gh-${i}">GitHub repo URL</label>
+        <input id="gh-${i}" type="url" placeholder="https://github.com/you/repo" required />
+        <label for="live-${i}">Live hosted URL</label>
+        <input id="live-${i}" type="url" placeholder="https://your-project.vercel.app" required />
+      </div>
+    `).join("");
+    currentTasks = tasks;
+  }
+
+  function renderByStatus(app){
+    currentApp = app;
+    if (app.status === "assigned") {
+      setStepper(1);
+      renderTasks(app.assignedTasks || []);
+      showOnly(els.tasksCard);
+    } else if (app.status === "submitted" && !app.paymentClaimed) {
+      setStepper(2);
+      showOnly(els.paymentCard);
+    } else if (app.status === "certified") {
+      setStepper(3);
+      els.certIdText.textContent = app.certId || "";
+      showOnly(els.certifiedCard);
+    } else if (app.status === "waitlisted") {
+      els.gateMsg.className = 'status-msg';
+      els.gateMsg.textContent = "You're on the waitlist for the next batch — no tasks assigned yet.";
+      showOnly(els.gateCard);
+    }
+  }
+
+  els.gateBtn.addEventListener('click', async () => {
+    if (!currentAppId) {
+      els.gateMsg.className = 'status-msg err';
+      els.gateMsg.textContent = 'This link is missing its application ID — use the link from your task email.';
+      return;
+    }
+    if (!firebaseReady) {
+      els.gateMsg.className = 'status-msg err';
+      els.gateMsg.textContent = 'Not connected yet — check Firebase config.';
+      return;
+    }
+    const email = els.gateEmail.value.trim();
+    if (!email) return;
+
+    els.gateBtn.disabled = true;
+    els.gateBtn.textContent = 'Checking…';
+    els.gateMsg.textContent = '';
+
+    try{
+      const snap = await fs.getDoc(fs.doc(db, "applications", currentAppId));
+      if (!snap.exists()) throw new Error("No application found for this link.");
+      const app = snap.data();
+      if (app.email.toLowerCase() !== email.toLowerCase()) {
+        throw new Error("That email doesn't match this application.");
+      }
+      els.pageSub.textContent = `Hey ${app.name}, here's where things stand.`;
+      renderByStatus(app);
+    }catch(err){
+      els.gateMsg.className = 'status-msg err';
+      els.gateMsg.textContent = err.message || 'Something went wrong.';
+    }finally{
+      els.gateBtn.disabled = false;
+      els.gateBtn.textContent = 'View my tasks';
+    }
+  });
+
+  els.submitLinksBtn.addEventListener('click', async () => {
+    const links = currentTasks.map((t, i) => ({
+      taskId: t.id,
+      githubUrl: document.getElementById(`gh-${i}`).value.trim(),
+      liveUrl: document.getElementById(`live-${i}`).value.trim(),
+    }));
+
+    if (links.some(l => !l.githubUrl || !l.liveUrl)) {
+      els.tasksMsg.className = 'status-msg err';
+      els.tasksMsg.textContent = 'Fill in both links for every task.';
+      return;
+    }
+
+    els.submitLinksBtn.disabled = true;
+    els.submitLinksBtn.textContent = 'Submitting…';
+    els.tasksMsg.textContent = '';
+
+    try{
+      const now = Date.now();
+      const deadlineMs = currentApp.deadline ? currentApp.deadline.toMillis() : null;
+      const isLate = deadlineMs ? now > deadlineMs : false;
+
+      await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
+        submissionLinks: links,
+        status: "submitted",
+        submittedAt: fs.serverTimestamp(),
+        submittedLate: isLate,
+      });
+      currentApp.status = "submitted";
+      currentApp.paymentClaimed = false;
+      setStepper(2);
+      showOnly(els.paymentCard);
+    }catch(err){
+      els.tasksMsg.className = 'status-msg err';
+      els.tasksMsg.textContent = err.message || 'Something went wrong.';
+    }finally{
+      els.submitLinksBtn.disabled = false;
+      els.submitLinksBtn.textContent = 'Submit all links';
+    }
+  });
+
+  els.payBtn.addEventListener('click', () => {
+    els.payBtn.disabled = true;
+    els.payBtn.textContent = 'Opening payment…';
+    els.paymentMsg.textContent = '';
+
+    // NOTE: no server-created order here (that needs your secret key on a
+    // backend). This is Razorpay's simpler amount-based Checkout — it works,
+    // but the resulting payment_id is NOT cryptographically verified.
+    const rzp = new Razorpay({
+      key: RAZORPAY_KEY_ID,
+      amount: CERTIFICATION_FEE_PAISE,
+      currency: "INR",
+      name: "ShipTasks",
+      description: "Internship certification fee",
+      prefill: { email: currentApp.email, name: currentApp.name },
+      theme: { color: "#3F3D9E" },
+      handler: async function(response){
+        try{
+          await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
+            paymentClaimed: true,
+            paymentId: response.razorpay_payment_id,
+            paidAt: fs.serverTimestamp(),
+          });
+          await generateCertificate();
+        }catch(err){
+          els.paymentMsg.className = 'status-msg err';
+          els.paymentMsg.textContent = err.message || 'Could not record payment.';
+        }
+      },
+      modal: {
+        ondismiss: function(){
+          els.payBtn.disabled = false;
+          els.payBtn.textContent = 'Pay ₹49 & get certified';
+        }
+      }
+    });
+    rzp.open();
+  });
+
+  async function buildCertificatePdf({ name, track, certId, dateStr }) {
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([842, 595]);
+    const { width, height } = page.getSize();
+
+    const serifBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+    const serif = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    const mono = await pdfDoc.embedFont(StandardFonts.Courier);
+
+    const ink = rgb(0.06, 0.08, 0.11), indigo = rgb(0.247, 0.239, 0.616), muted = rgb(0.357, 0.4, 0.447);
+
+    page.drawRectangle({ x: 24, y: 24, width: width - 48, height: height - 48, borderColor: indigo, borderWidth: 2 });
+    page.drawRectangle({ x: 34, y: 34, width: width - 68, height: height - 68, borderColor: muted, borderWidth: 0.5 });
+
+    const centerText = (text, font, size, y, color = ink) => {
+      const textWidth = font.widthOfTextAtSize(text, size);
+      page.drawText(text, { x: (width - textWidth) / 2, y, size, font, color });
+    };
+
+    const trackLabel = track === "frontend" ? "Frontend" : "Backend";
+    centerText("CERTIFICATE OF COMPLETION", mono, 13, height - 110, indigo);
+    centerText("This is to certify that", serif, 14, height - 165, muted);
+    centerText(name, serifBold, 32, height - 210, ink);
+    centerText(`has successfully completed the ${trackLabel} Developer Internship,`, serif, 13, height - 250, ink);
+    centerText("shipping real, verifiable projects to a public GitHub repository.", serif, 13, height - 270, ink);
+    centerText(`Issued ${dateStr}`, serif, 11, 110, muted);
+    centerText(`Certificate ID: ${certId}`, mono, 10, 92, muted);
+
+    return pdfDoc.save();
+  }
+
+  async function generateCertificate(){
+    setStepper(2);
+    showOnly(els.generatingCard);
+
+    const certId = `CERT-${currentAppId.slice(0, 8).toUpperCase()}`;
+    const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+
+    const pdfBytes = await buildCertificatePdf({ name: currentApp.name, track: currentApp.track, certId, dateStr });
+
+    await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
+      status: "certified",
+      certId,
+      certifiedAt: fs.serverTimestamp(),
+    });
+    currentApp.status = "certified";
+    currentApp.certId = certId;
+
+    // Stash the PDF bytes on the download button so it regenerates fresh
+    // each click (no server storage — the certificate lives in this tab
+    // until downloaded).
+    els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${certId}.pdf`);
+
+    setStepper(3);
+    els.certIdText.textContent = certId;
+    showOnly(els.certifiedCard);
+
+    sendCertificateEmail(certId);
+  }
+
+  function downloadPdf(bytes, filename){
+    const blob = new Blob([bytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function sendCertificateEmail(certId){
+    if (EMAILJS_PUBLIC_KEY === "YOUR_EMAILJS_PUBLIC_KEY") return;
+    try{
+      const emailjsMod = await import("https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.es.min.js");
+      emailjsMod.init(EMAILJS_PUBLIC_KEY);
+      await emailjsMod.send(EMAILJS_SERVICE_ID, EMAILJS_CERT_TEMPLATE_ID, {
+        to_email: currentApp.email, to_name: currentApp.name, cert_id: certId,
+      });
+    }catch(err){ console.error("Certificate email failed (download still works):", err); }
+  }
+
+  // If the applicant already has a certificate and revisits the link, offer
+  // it again without redoing payment.
+  els.gateBtn.addEventListener('click', async () => {
+    if (currentApp && currentApp.status === "certified" && !els.certDownloadLink.onclick) {
+      const certId = currentApp.certId;
+      const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+      const pdfBytes = await buildCertificatePdf({ name: currentApp.name, track: currentApp.track, certId, dateStr });
+      els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${certId}.pdf`);
+    }
+  });
+</script>
+
+</body>
+</html>

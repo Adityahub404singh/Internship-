@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Submit Your Work — ShipTasks</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B0E14'/%3E%3Crect x='6' y='6' width='20' height='20' rx='4' fill='%238B7CFF'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='13' font-weight='700' fill='white' text-anchor='middle'%3EST%3C/text%3E%3C/svg%3E" />
+<meta name="theme-color" content="#0B0E14" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+  :root{
+    --ink: #0B0E14;
+    --ink-soft: #131722;
+    --panel: #171B26;
+    --panel-raised: #1C212F;
+    --line: #2A3040;
+    --line-soft: #20242F;
+    --text: #F3F5F8;
+    --muted: #8B93A3;
+    --muted-dim: #626A7A;
+    --violet: #8B7CFF;
+    --violet-dim: #6E5FE0;
+    --violet-glow: rgba(139,124,255,0.35);
+    --gold: #F0B94D;
+    --gold-bg: rgba(240,185,77,0.12);
+    --emerald: #34D399;
+    --emerald-bg: rgba(52,211,153,0.12);
+    --red: #F87171;
+    --red-bg: rgba(248,113,113,0.12);
+    --radius: 10px;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin:0; min-height:100vh;
+    background: var(--ink);
+    color: var(--text); font-family: var(--body); line-height:1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap{ max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+  nav.top{
+    display:flex; align-items:center; padding: 22px 24px; max-width: 720px; margin: 0 auto;
+    position: sticky; top:0; z-index: 10;
+    background: rgba(11,14,20,0.72); backdrop-filter: blur(10px);
+  }
+  .logo{
+    font-family: var(--display); font-weight:700; font-size:16px; letter-spacing:-0.01em;
+    display:flex; align-items:center; gap:9px;
+  }
+  .logo .mark{
+    width:20px; height:20px; border-radius: 5px;
+    background: linear-gradient(135deg, var(--violet), #5B4FE0);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-family: var(--mono); font-size: 11px; font-weight:600; color:#fff;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 4px 14px rgba(139,124,255,0.35);
+  }
+
+  main{ padding: 32px 24px 90px; }
+  .eyebrow{
+    font-family: var(--mono); font-size: 12px; color: var(--violet);
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow .pip{ width:6px; height:6px; border-radius:50%; background: var(--violet); box-shadow: 0 0 8px var(--violet-glow); }
+  h1{ font-family: var(--display); font-size: clamp(26px,4vw,34px); margin: 0 0 10px; font-weight:700; letter-spacing:-0.01em; }
+  .sub{ color: var(--muted); font-size:15px; margin: 0 0 32px; max-width: 560px; }
+
+  /* STEPPER */
+  .stepper{ display:flex; gap:0; margin-bottom: 36px; background: var(--panel); border:1px solid var(--line); border-radius: var(--radius); overflow:hidden; }
+  .step{ flex:1; padding: 16px 18px; border-right: 1px solid var(--line-soft); }
+  .step:last-child{ border-right:none; }
+  .step-status{ font-family: var(--mono); font-size: 10px; text-transform:uppercase; letter-spacing:0.06em; padding:4px 9px; border-radius: 20px; display:inline-block; margin-bottom:8px; }
+  .step-status.done{ background: var(--emerald-bg); color: var(--emerald); border:1px solid rgba(52,211,153,0.25); }
+  .step-status.active{ background: var(--gold-bg); color: var(--gold); border:1px solid rgba(240,185,77,0.25); }
+  .step-status.queued{ background: var(--line-soft); color: var(--muted-dim); border:1px solid var(--line); }
+  .step p{ margin:0; font-family: var(--display); font-size:13.5px; font-weight:600; }
+
+  /* CARD */
+  .card{ background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 26px; margin-bottom: 20px; box-shadow: 0 20px 50px -25px rgba(0,0,0,0.6); }
+  .card h2{ font-family: var(--display); font-size: 19px; margin: 0 0 6px; font-weight:600; }
+  .card .desc{ font-size: 13.5px; color: var(--muted); margin: 0 0 22px; }
+
+  label{ font-family: var(--mono); font-size:11.5px; color: var(--muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:7px; }
+  input{
+    width:100%; font-family: var(--body); font-size: 15px; padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--ink-soft); color: var(--text); margin-bottom: 18px;
+  }
+  input::placeholder{ color: var(--muted-dim); }
+  input:focus{ outline: none; border-color: var(--violet); box-shadow: 0 0 0 3px rgba(139,124,255,0.18); }
+
+  .btn{ font-family: var(--mono); font-size: 14px; font-weight:600; padding: 14px 22px; border-radius: 30px; border: none; cursor:pointer; transition: transform .15s ease, box-shadow .15s ease; }
+  .btn-primary{ background: linear-gradient(100deg, var(--violet-dim), var(--violet)); color: #fff; box-shadow: 0 8px 24px rgba(139,124,255,0.35); }
+  .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 12px 30px rgba(139,124,255,0.45); }
+  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+  .btn-full{ width:100%; }
+
+  .task-item{ border-top: 1px solid var(--line-soft); padding-top:20px; margin-top:20px; }
+  .task-item:first-of-type{ border-top:none; margin-top:0; padding-top:0; }
+  .task-item .tid{ font-family: var(--mono); font-size:11px; color: var(--muted-dim); margin-bottom:4px; }
+  .task-item .ttitle{ font-family: var(--display); font-size:15.5px; margin-bottom:14px; font-weight:600; }
+
+  .status-msg{ font-family: var(--mono); font-size: 13px; margin-top: 12px; }
+  .status-msg.ok{ color: var(--emerald); }
+  .status-msg.err{ color: var(--red); }
+
+  .cert-box{ text-align:center; padding: 14px 0; }
+  .cert-icon{
+    width:58px; height:58px; border-radius:50%; background: var(--emerald-bg); color: var(--emerald);
+    display:flex; align-items:center; justify-content:center; font-size:28px; margin: 0 auto 18px;
+    border: 1px solid rgba(52,211,153,0.3);
+  }
+  .cert-id{ font-family: var(--mono); font-size:12px; color: var(--muted-dim); margin: 12px 0 22px; }
+  .btn-download{
+    display:inline-block; background: linear-gradient(100deg, var(--violet-dim), var(--violet)); color:#fff;
+    font-family: var(--mono); font-size:14px; font-weight:600; padding: 14px 24px; border-radius: 30px;
+    text-decoration:none; border:none; cursor:pointer; box-shadow: 0 8px 24px rgba(139,124,255,0.35);
+  }
+
+  .spinner{ width:18px; height:18px; border: 2px solid var(--line); border-top-color: var(--violet); border-radius:50%; display:inline-block; animation: spin 0.8s linear infinite; vertical-align:middle; margin-right:8px; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .hidden{ display:none !important; }
+  .center-note{ text-align:center; font-size: 13.5px; color: var(--muted-dim); }
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="logo"><span class="mark">ST</span>ShipTasks</div></nav>
+
+<main class="wrap">
+  <div class="eyebrow"><span class="pip"></span>Submission Portal</div>
+  <h1 id="page-title">Submit your work</h1>
+  <p class="sub" id="page-sub">Confirm your email to pull up your assigned tasks.</p>
+
+  <div class="stepper" id="stepper">
+    <div class="step"><span class="step-status active" id="s1-status">Step 1</span><p>Submit work</p></div>
+    <div class="step"><span class="step-status queued" id="s2-status">Step 2</span><p>Verify</p></div>
+    <div class="step"><span class="step-status queued" id="s3-status">Step 3</span><p>Get certified</p></div>
+  </div>
+
+  <!-- GATE -->
+  <div class="card" id="gate-card">
+    <h2>Confirm it's you</h2>
+    <p class="desc">Enter the email you applied with.</p>
+    <label for="gate-email">Email</label>
+    <input id="gate-email" type="email" placeholder="you@example.com" required />
+    <button class="btn btn-primary btn-full" id="gate-btn">View my tasks</button>
+    <div class="status-msg" id="gate-msg"></div>
+  </div>
+
+  <!-- TASK SUBMISSION -->
+  <div class="card hidden" id="tasks-card">
+    <h2>Your assigned tasks</h2>
+    <p class="desc">Paste your GitHub repo and live hosted link for each task.</p>
+    <div id="task-list"></div>
+    <button class="btn btn-primary btn-full" id="submit-links-btn" style="margin-top:8px;">Submit all links</button>
+    <div class="status-msg" id="tasks-msg"></div>
+  </div>
+
+  <!-- GENERATING -->
+  <div class="card hidden" id="generating-card">
+    <div class="cert-box">
+      <p><span class="spinner"></span>Verifying &amp; generating your certificate…</p>
+      <p class="center-note">This usually takes a few seconds. Don't close this tab.</p>
+    </div>
+  </div>
+
+  <!-- CERTIFIED -->
+  <div class="card hidden" id="certified-card">
+    <div class="cert-box">
+      <div class="cert-icon">✓</div>
+      <h2>You're certified</h2>
+      <p class="desc">Your certificate has also been emailed to you.</p>
+      <p class="cert-id" id="cert-id-text"></p>
+      <button class="btn-download" id="cert-download-link" type="button">Download certificate</button>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+  // ------------------------------------------------------------------
+  // Same Firebase project as index.html — fill in your real config.
+  //
+  // FREE-TIER VERSION: no Cloud Functions, so:
+  //  - identity check (email match) happens here in the browser, not on a
+  //    trusted server — the appId itself (a long random Firestore ID) is
+  //    the real access gate.
+  //  - Razorpay payment is NOT cryptographically verified (that requires
+  //    your secret key, which must never live in browser code). This marks
+  //    payment as "claimed" — cross-check against your Razorpay dashboard
+  //    if that matters for your use case.
+  //  - The certificate PDF is generated right here in the browser (pdf-lib)
+  //    and downloaded directly — nothing is stored server-side.
+  // ------------------------------------------------------------------
+  const firebaseConfig = {
+    apiKey: "AIzaSyBX1a6jx2YlyzJOQ9Fr9fnZ6BCCwwN-FBQ",
+    authDomain: "internship-764c3.firebaseapp.com",
+    projectId: "internship-764c3",
+    storageBucket: "internship-764c3.firebasestorage.app",
+    messagingSenderId: "678513496959",
+    appId: "1:678513496959:web:9163a84e50ebe9d642004a"
+  };
+
+  // Razorpay public Key ID only — never put the Key Secret in browser code.
+  // The Razorpay checkout window itself always shows the amount and the
+  // merchant name to the payer before they pay — that's Razorpay's own
+  // requirement, not something this page controls or can hide.
+  const RAZORPAY_KEY_ID = "rzp_test_SveAvj6ljoj11l";
+  const CERTIFICATION_FEE_PAISE = 4900;
+
+  // EmailJS — same account/service as index.html. TEMPLATE_ID here should
+  // point at a "certificate ready" template. If you haven't made a
+  // separate one yet, this reuses the task-assignment template ID as a
+  // placeholder — make a dedicated one in EmailJS when you get a chance,
+  // using variables: {{to_email}}, {{to_name}}, {{cert_id}}.
+  const EMAILJS_PUBLIC_KEY = "IcT1qOhZvYmcrvua1";
+  const EMAILJS_SERVICE_ID = "service_5qhty2d";
+const EMAILJS_CERT_TEMPLATE_ID = "template_kblft3d";
+
+  const params = new URLSearchParams(window.location.search);
+  const appId = params.get("app");
+
+  const els = {
+    gateCard: document.getElementById('gate-card'),
+    gateEmail: document.getElementById('gate-email'),
+    gateBtn: document.getElementById('gate-btn'),
+    gateMsg: document.getElementById('gate-msg'),
+    tasksCard: document.getElementById('tasks-card'),
+    taskList: document.getElementById('task-list'),
+    submitLinksBtn: document.getElementById('submit-links-btn'),
+    tasksMsg: document.getElementById('tasks-msg'),
+    generatingCard: document.getElementById('generating-card'),
+    certifiedCard: document.getElementById('certified-card'),
+    certIdText: document.getElementById('cert-id-text'),
+    certDownloadLink: document.getElementById('cert-download-link'),
+    s1: document.getElementById('s1-status'),
+    s2: document.getElementById('s2-status'),
+    s3: document.getElementById('s3-status'),
+    pageSub: document.getElementById('page-sub'),
+  };
+
+  let db, fs, firebaseReady = false;
+  let currentAppId = appId, currentApp = null, currentTasks = [];
+
+  async function initFirebase(){
+    if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+      els.gateMsg.className = 'status-msg err';
+      els.gateMsg.textContent = 'Firebase config is a placeholder — fill it in to go live.';
+      return;
+    }
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const app = initializeApp(firebaseConfig);
+    db = fs.getFirestore(app);
+    firebaseReady = true;
+
+    if (EMAILJS_PUBLIC_KEY !== "YOUR_EMAILJS_PUBLIC_KEY" && window.emailjs) {
+      window.emailjs.init(EMAILJS_PUBLIC_KEY);
+    }
+  }
+  initFirebase();
+
+  function showOnly(cardEl){
+    [els.gateCard, els.tasksCard, els.generatingCard, els.certifiedCard].forEach(c => c.classList.add('hidden'));
+    cardEl.classList.remove('hidden');
+  }
+
+  function setStepper(step){
+    const cfg = { 1: ['active','queued','queued'], 2: ['done','active','queued'], 3: ['done','done','done'] }[step];
+    [els.s1, els.s2, els.s3].forEach((el, i) => { el.className = `step-status ${cfg[i]}`; });
+  }
+
+  function renderTasks(tasks){
+    els.taskList.innerHTML = tasks.map((t, i) => `
+      <div class="task-item">
+        <div class="tid">${t.displayId}</div>
+        <div class="ttitle">${t.title}</div>
+        <label for="gh-${i}">GitHub repo URL</label>
+        <input id="gh-${i}" type="url" placeholder="https://github.com/you/repo" required />
+        <label for="live-${i}">Live hosted URL</label>
+        <input id="live-${i}" type="url" placeholder="https://your-project.vercel.app" required />
+      </div>
+    `).join("");
+    currentTasks = tasks;
+  }
+
+  async function renderByStatus(app){
+    currentApp = app;
+    if (app.status === "assigned") {
+      setStepper(1);
+      renderTasks(app.assignedTasks || []);
+      showOnly(els.tasksCard);
+    } else if (app.status === "submitted" && !app.paymentClaimed) {
+      // Links are in but payment hasn't gone through yet — send them
+      // straight back to checkout, no certificate until it's paid.
+      setStepper(2);
+      renderTasks(app.assignedTasks || []);
+      showOnly(els.tasksCard);
+      els.submitLinksBtn.textContent = 'Complete payment';
+      openPaymentCheckout();
+    } else if (app.status === "submitted" && app.paymentClaimed) {
+      await generateCertificate();
+    } else if (app.status === "certified") {
+      setStepper(3);
+      els.certIdText.textContent = app.certId || "";
+      showOnly(els.certifiedCard);
+    } else if (app.status === "waitlisted") {
+      els.gateMsg.className = 'status-msg';
+      els.gateMsg.textContent = "You're on the waitlist for the next batch — no tasks assigned yet.";
+      showOnly(els.gateCard);
+    }
+  }
+
+  els.gateBtn.addEventListener('click', async () => {
+    if (!currentAppId) {
+      els.gateMsg.className = 'status-msg err';
+      els.gateMsg.textContent = 'This link is missing its application ID — use the link from your task email.';
+      return;
+    }
+    if (!firebaseReady) {
+      els.gateMsg.className = 'status-msg err';
+      els.gateMsg.textContent = 'Not connected yet — check Firebase config.';
+      return;
+    }
+    const email = els.gateEmail.value.trim();
+    if (!email) return;
+
+    els.gateBtn.disabled = true;
+    els.gateBtn.textContent = 'Checking…';
+    els.gateMsg.textContent = '';
+
+    try{
+      const snap = await fs.getDoc(fs.doc(db, "applications", currentAppId));
+      if (!snap.exists()) throw new Error("No application found for this link.");
+      const app = snap.data();
+      if (app.email.toLowerCase() !== email.toLowerCase()) {
+        throw new Error("That email doesn't match this application.");
+      }
+      els.pageSub.textContent = `Hey ${app.name}, here's where things stand.`;
+
+      // Already certified? Regenerate the PDF right away so the download
+      // button works without redoing anything.
+      if (app.status === "certified") {
+        const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+        const pdfBytes = await buildCertificatePdf({ name: app.name, track: app.track, certId: app.certId, dateStr });
+        els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${app.certId}.pdf`);
+      }
+
+      await renderByStatus(app);
+    }catch(err){
+      els.gateMsg.className = 'status-msg err';
+      els.gateMsg.textContent = err.message || 'Something went wrong.';
+    }finally{
+      els.gateBtn.disabled = false;
+      els.gateBtn.textContent = 'View my tasks';
+    }
+  });
+
+  els.submitLinksBtn.addEventListener('click', async () => {
+    const links = currentTasks.map((t, i) => ({
+      taskId: t.id,
+      githubUrl: document.getElementById(`gh-${i}`).value.trim(),
+      liveUrl: document.getElementById(`live-${i}`).value.trim(),
+    }));
+
+    if (links.some(l => !l.githubUrl || !l.liveUrl)) {
+      els.tasksMsg.className = 'status-msg err';
+      els.tasksMsg.textContent = 'Fill in both links for every task.';
+      return;
+    }
+
+    els.submitLinksBtn.disabled = true;
+    els.submitLinksBtn.textContent = 'Submitting…';
+    els.tasksMsg.textContent = '';
+
+    try{
+      const now = Date.now();
+      const deadlineMs = currentApp.deadline ? currentApp.deadline.toMillis() : null;
+      const isLate = deadlineMs ? now > deadlineMs : false;
+
+      await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
+        submissionLinks: links,
+        status: "submitted",
+        submittedAt: fs.serverTimestamp(),
+        submittedLate: isLate,
+      });
+      currentApp.status = "submitted";
+      currentApp.paymentClaimed = false;
+      setStepper(2);
+      openPaymentCheckout();
+    }catch(err){
+      els.tasksMsg.className = 'status-msg err';
+      els.tasksMsg.textContent = err.message || 'Something went wrong.';
+      els.submitLinksBtn.disabled = false;
+      els.submitLinksBtn.textContent = 'Submit all links';
+    }
+  });
+
+  function openPaymentCheckout(){
+    els.submitLinksBtn.textContent = 'Opening payment…';
+
+    // NOTE: no server-created order here (that needs your secret key on a
+    // backend). This is Razorpay's simpler amount-based Checkout — it
+    // works, but the resulting payment_id is NOT cryptographically verified.
+    const rzp = new Razorpay({
+      key: RAZORPAY_KEY_ID,
+      amount: CERTIFICATION_FEE_PAISE,
+      currency: "INR",
+      name: "ShipTasks",
+      description: "Internship certificate verification",
+      prefill: { email: currentApp.email, name: currentApp.name },
+      theme: { color: "#8B7CFF" },
+      handler: async function(response){
+        try{
+          await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
+            paymentClaimed: true,
+            paymentId: response.razorpay_payment_id,
+            paidAt: fs.serverTimestamp(),
+          });
+          currentApp.paymentClaimed = true;
+          await generateCertificate();
+        }catch(err){
+          els.tasksMsg.className = 'status-msg err';
+          els.tasksMsg.textContent = err.message || 'Could not confirm payment — please try again.';
+          els.submitLinksBtn.disabled = false;
+          els.submitLinksBtn.textContent = 'Submit all links';
+        }
+      },
+      modal: {
+        ondismiss: function(){
+          // No payment, no certificate — back to the task form.
+          els.submitLinksBtn.disabled = false;
+          els.submitLinksBtn.textContent = 'Submit all links';
+          setStepper(1);
+        }
+      }
+    });
+    rzp.open();
+  }
+
+  async function buildCertificatePdf({ name, track, certId, dateStr }) {
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([842, 595]);
+    const { width, height } = page.getSize();
+
+    const serifBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+    const serif = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    const mono = await pdfDoc.embedFont(StandardFonts.Courier);
+
+    const ink = rgb(0.06, 0.08, 0.11), indigo = rgb(0.545, 0.486, 1), muted = rgb(0.357, 0.4, 0.447);
+
+    page.drawRectangle({ x: 24, y: 24, width: width - 48, height: height - 48, borderColor: indigo, borderWidth: 2 });
+    page.drawRectangle({ x: 34, y: 34, width: width - 68, height: height - 68, borderColor: muted, borderWidth: 0.5 });
+
+    const centerText = (text, font, size, y, color = ink) => {
+      const textWidth = font.widthOfTextAtSize(text, size);
+      page.drawText(text, { x: (width - textWidth) / 2, y, size, font, color });
+    };
+
+    const trackLabel = track === "frontend" ? "Frontend" : "Backend";
+    centerText("CERTIFICATE OF COMPLETION", mono, 13, height - 110, indigo);
+    centerText("This is to certify that", serif, 14, height - 165, muted);
+    centerText(name, serifBold, 32, height - 210, ink);
+    centerText(`has successfully completed the ${trackLabel} Developer Internship,`, serif, 13, height - 250, ink);
+    centerText("shipping real, verifiable projects to a public GitHub repository.", serif, 13, height - 270, ink);
+    centerText(`Issued ${dateStr}`, serif, 11, 110, muted);
+    centerText(`Certificate ID: ${certId}`, mono, 10, 92, muted);
+
+    return pdfDoc.save();
+  }
+
+  async function generateCertificate(){
+    setStepper(2);
+    showOnly(els.generatingCard);
+
+    const certId = currentApp.certId || `CERT-${currentAppId.slice(0, 8).toUpperCase()}`;
+    const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+
+    const pdfBytes = await buildCertificatePdf({ name: currentApp.name, track: currentApp.track, certId, dateStr });
+
+    if (currentApp.status !== "certified") {
+      await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
+        status: "certified",
+        certId,
+        certifiedAt: fs.serverTimestamp(),
+      });
+      sendCertificateEmail(certId);
+    }
+    currentApp.status = "certified";
+    currentApp.certId = certId;
+
+    els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${certId}.pdf`);
+
+    setStepper(3);
+    els.certIdText.textContent = certId;
+    showOnly(els.certifiedCard);
+  }
+
+  function downloadPdf(bytes, filename){
+    const blob = new Blob([bytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function sendCertificateEmail(certId){
+    if (EMAILJS_PUBLIC_KEY === "YOUR_EMAILJS_PUBLIC_KEY" || !window.emailjs) return;
+    window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CERT_TEMPLATE_ID, {
+      to_email: currentApp.email,
+      to_name: currentApp.name,
+      cert_id: certId,
+      track: currentApp.track,
+      deadline: "",
+      tasks_text: `Your certificate (${certId}) is ready — download it from the submission portal.`,
+      submit_link: window.location.href,
+    }).then(() => {
+      console.log("Certificate email sent successfully.");
+    }).catch((err) => {
+      console.error("Certificate email failed (download still works):", err);
+    });
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dev Internship — Apply, Build, Ship, Get Certified</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EDF1F5;
+    --panel: #FFFFFF;
+    --ink: #10151C;
+    --muted: #5B6672;
+    --grid-line: #C7D0D9;
+    --grid-line-soft: #DCE3EA;
+    --indigo: #3F3D9E;
+    --indigo-dark: #302E78;
+    --green: #2E7D5B;
+    --green-bg: #E4F1EA;
+    --amber: #C77D2A;
+    --amber-bg: #FBEBDB;
+    --grey-bg: #E7ECF1;
+    --radius: 4px;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+  }
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--bg);
+    background-image:
+      linear-gradient(var(--grid-line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line-soft) 1px, transparent 1px);
+    background-size: 32px 32px;
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.5;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+  .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* NAV */
+  nav.top{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 20px 24px; max-width: 1040px; margin: 0 auto;
+  }
+  .logo{
+    font-family: var(--mono); font-weight:600; font-size:14px;
+    letter-spacing: 0.02em;
+    display:flex; align-items:center; gap:8px;
+  }
+  .logo::before{
+    content:''; width:10px; height:10px; background: var(--green);
+    border-radius:1px; display:inline-block;
+  }
+  .top a{
+    font-family: var(--mono); font-size: 13px; color: var(--ink);
+    text-decoration:none; border-bottom: 1px solid var(--ink); padding-bottom:2px;
+  }
+
+  /* HERO */
+  .hero{ padding: 40px 24px 20px; }
+  .eyebrow{
+    font-family: var(--mono); font-size: 12px; color: var(--indigo);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    display:inline-flex; align-items:center; gap:8px; margin-bottom: 18px;
+  }
+  .eyebrow::before{ content:'//'; color: var(--muted); }
+  h1{
+    font-family: var(--display); font-size: clamp(34px, 5vw, 56px);
+    font-weight:700; line-height:1.08; margin: 0 0 20px; max-width: 780px;
+    letter-spacing: -0.01em;
+  }
+  h1 .hl{ color: var(--green); }
+  .sub{
+    font-size: 17px; color: var(--muted); max-width: 560px; margin: 0 0 28px;
+  }
+  .hero-ctas{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom: 48px; }
+  .btn{
+    font-family: var(--mono); font-size: 14px; font-weight:600;
+    padding: 13px 22px; border-radius: var(--radius); border: none;
+    cursor:pointer; text-decoration:none; display:inline-block;
+  }
+  .btn-primary{ background: var(--indigo); color: #fff; }
+  .btn-primary:hover{ background: var(--indigo-dark); }
+  .btn-ghost{ background:transparent; color: var(--ink); border: 1px solid var(--grid-line); }
+  .btn-ghost:hover{ border-color: var(--ink); }
+
+  /* PIPELINE STRIP */
+  .pipeline{
+    display:flex; align-items:stretch; gap:0; margin: 0 0 8px;
+    background: var(--panel); border: 1px solid var(--grid-line);
+    border-radius: var(--radius); overflow:hidden;
+  }
+  .stage{
+    flex:1; padding: 18px 16px; position:relative;
+    border-right: 1px dashed var(--grid-line);
+  }
+  .stage:last-child{ border-right:none; }
+  .stage-status{
+    font-family: var(--mono); font-size: 10px; text-transform:uppercase;
+    letter-spacing:0.06em; display:inline-flex; align-items:center; gap:6px;
+    padding: 3px 8px; border-radius: 20px; margin-bottom: 10px;
+  }
+  .stage-status.done{ background: var(--green-bg); color: var(--green); }
+  .stage-status.active{ background: var(--amber-bg); color: var(--amber); }
+  .stage-status.queued{ background: var(--grey-bg); color: var(--muted); }
+  .stage-status .dot{ width:6px; height:6px; border-radius:50%; background: currentColor; }
+  .stage-status.active .dot{ animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.35; } }
+  .stage h3{ font-family: var(--display); font-size:15px; margin:0 0 4px; }
+  .stage p{ font-size: 12.5px; color: var(--muted); margin:0; }
+  .pipeline-caption{
+    font-family: var(--mono); font-size:11.5px; color: var(--muted);
+    margin: 0 0 60px;
+  }
+  .trust-line{
+    font-size: 13.5px; color: var(--muted); margin: 0 0 40px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .trust-line::before{ content:'✓'; color: var(--green); font-weight:600; }
+
+  .batch-banner{
+    display:inline-flex; align-items:center; gap:10px;
+    background: var(--amber-bg); color: var(--amber);
+    font-family: var(--mono); font-size: 12.5px;
+    padding: 8px 14px; border-radius: 20px; margin-bottom: 20px;
+  }
+  .batch-banner .batch-dot{
+    width: 7px; height:7px; border-radius:50%; background: var(--amber);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  .batch-banner.full{ background: var(--grey-bg); color: var(--muted); }
+  .batch-banner.full .batch-dot{ background: var(--muted); animation:none; }
+  .batch-sep{ opacity:0.5; }
+  .form-batch-note{
+    font-family: var(--mono); font-size: 12.5px; color: var(--amber);
+    margin: 4px 0 30px;
+  }
+
+  /* WHY REAL SECTION */
+  .why-real{ background: var(--panel); border-top: 1px solid var(--grid-line); border-bottom: 1px solid var(--grid-line); }
+  .why-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 10px; }
+  .why-card{ border: 1px solid var(--grid-line); border-radius: var(--radius); padding: 20px; }
+  .why-card .why-icon{
+    width: 30px; height:30px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
+    background: var(--green-bg); color: var(--green); font-family: var(--mono); font-weight:600; font-size:14px;
+    margin-bottom: 14px;
+  }
+  .why-card h3{ font-family: var(--display); font-size:16px; margin: 0 0 8px; }
+  .why-card p{ font-size: 13.5px; color: var(--muted); margin:0; }
+  @media (max-width: 720px){ .why-grid{ grid-template-columns: 1fr; } }
+
+  /* SECTION SHARED */
+  section{ padding: 60px 24px; }
+  .section-inner{ max-width: 1040px; margin: 0 auto; }
+  h2{
+    font-family: var(--display); font-size: clamp(24px,3vw,32px);
+    margin: 0 0 8px;
+  }
+  .section-desc{ color: var(--muted); max-width: 520px; margin: 0 0 36px; font-size:15px; }
+
+  /* TICKET CARD */
+  .ticket{
+    background: var(--panel); border: 1px solid var(--grid-line);
+    border-radius: var(--radius); max-width: 560px;
+    box-shadow: 0 1px 0 var(--grid-line);
+  }
+  .ticket-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 16px 20px; border-bottom: 1px dashed var(--grid-line);
+  }
+  .ticket-id{ font-family: var(--mono); font-size:12px; color: var(--muted); }
+  .ticket-tag{
+    font-family: var(--mono); font-size:11px; text-transform:uppercase;
+    background: var(--indigo); color:#fff; padding: 3px 9px; border-radius: 20px;
+  }
+  .ticket-body{ padding: 20px; }
+  .ticket-body h3{ font-family: var(--display); font-size:20px; margin: 0 0 12px; }
+  .ticket-body .label{
+    font-family: var(--mono); font-size:11px; color: var(--muted);
+    text-transform:uppercase; letter-spacing:0.06em; margin: 16px 0 6px;
+  }
+  .ticket-body .label:first-of-type{ margin-top:0; }
+  .ticket-body p{ margin:0; font-size: 14px; color: var(--ink); }
+  .ticket-body ul{ margin: 0; padding-left: 18px; font-size: 14px; }
+  .ticket-body li{ margin-bottom: 4px; }
+  .ticket-foot{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 14px 20px; border-top: 1px dashed var(--grid-line);
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+  }
+  .deadline-chip{ background: var(--amber-bg); color: var(--amber); padding: 4px 10px; border-radius: 20px; }
+  .pool-note{ font-size: 13px; color: var(--muted); margin-top: 18px; max-width: 480px; }
+
+  /* FORM */
+  #apply{ background: var(--panel); border-top: 1px solid var(--grid-line); border-bottom: 1px solid var(--grid-line); }
+  .form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 620px; }
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field.full{ grid-column: 1 / -1; }
+  label{ font-family: var(--mono); font-size:12px; color: var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
+  input, select{
+    font-family: var(--body); font-size: 15px; padding: 11px 12px;
+    border: 1px solid var(--grid-line); border-radius: var(--radius);
+    background: var(--bg); color: var(--ink);
+  }
+  input:focus, select:focus{ outline: 2px solid var(--indigo); outline-offset:1px; }
+  .fee-note{
+    display:flex; gap:10px; align-items:flex-start; margin: 22px 0 20px;
+    max-width: 620px; padding: 14px 16px; background: var(--grey-bg);
+    border-radius: var(--radius); font-size: 13.5px; color: var(--muted);
+  }
+  .fee-note strong{ color: var(--ink); }
+  .status-msg{ font-family: var(--mono); font-size: 13px; margin-top: 14px; min-height: 18px; }
+  .status-msg.ok{ color: var(--green); }
+  .status-msg.err{ color: #B23A3A; }
+
+  footer{ padding: 40px 24px 60px; }
+  footer .section-inner{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px; }
+  footer p{ color: var(--muted); font-size: 13px; margin:0; max-width: 420px; }
+  footer .fmono{ font-family: var(--mono); font-size:12px; color: var(--muted); }
+
+  @media (max-width: 640px){
+    .pipeline{ flex-direction: column; }
+    .stage{ border-right:none; border-bottom: 1px dashed var(--grid-line); }
+    .stage:last-child{ border-bottom:none; }
+    .form-grid{ grid-template-columns: 1fr; }
+  }
+
+  .reveal{ opacity:0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
+  .reveal.in{ opacity:1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="logo">shiptasks.dev</div>
+  <a href="#apply">Apply</a>
+</nav>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Frontend / Backend Developer Internship</div>
+    <div class="batch-banner" id="batch-banner" hidden>
+      <span class="batch-dot"></span>
+      <span id="batch-time-text">Loading this week's batch…</span>
+      <span class="batch-sep">·</span>
+      <span id="batch-seats-text"></span>
+    </div>
+    <h1>A real internship, run the way a real engineering team runs — <span class="hl">tickets, deadlines, and code that ships.</span></h1>
+    <p class="sub">No lectures, no filler videos. You get assigned real tasks with real deadlines, you build and push actual working code, and you finish with a certificate backed by a public GitHub history anyone can check — not just a PDF with your name on it.</p>
+    <div class="hero-ctas">
+      <a href="#apply" class="btn btn-primary">Apply for tasks</a>
+      <a href="#sample-task" class="btn btn-ghost">See a sample task</a>
+    </div>
+    <p class="trust-line">Every task is scoped, timed, and verified the same way — no favoritism, no manual shortcuts.</p>
+
+    <div class="pipeline reveal" id="pipeline">
+      <div class="stage">
+        <span class="stage-status done"><span class="dot"></span>Step 1</span>
+        <h3>Applied</h3>
+        <p>Name, email, phone, and your track go into the system.</p>
+      </div>
+      <div class="stage">
+        <span class="stage-status active"><span class="dot"></span>Step 2</span>
+        <h3>Tasks assigned</h3>
+        <p>3–5 tasks are pulled from the pool. A 14-day clock starts.</p>
+      </div>
+      <div class="stage">
+        <span class="stage-status queued"><span class="dot"></span>Step 3</span>
+        <h3>Build &amp; ship</h3>
+        <p>Push to GitHub, host it live, submit your links.</p>
+      </div>
+      <div class="stage">
+        <span class="stage-status queued"><span class="dot"></span>Step 4</span>
+        <h3>Certified</h3>
+        <p>Verify with ₹49, get your named certificate instantly.</p>
+      </div>
+    </div>
+    <p class="pipeline-caption">Every stage runs on its own — no one is manually reviewing your queue position.</p>
+  </div>
+</div>
+
+<section class="why-real">
+  <div class="section-inner">
+    <h2>Why this counts as real experience</h2>
+    <p class="section-desc">Not hype — this is exactly what makes it different from a course with a certificate at the end.</p>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">1</div>
+        <h3>You ship to a public repo</h3>
+        <p>Every task is submitted as a live GitHub repo and a hosted link — anyone, including a future employer, can open it and check the code themselves.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">2</div>
+        <h3>Real deadlines, no extensions by default</h3>
+        <p>Your 14-day clock starts the moment tasks are assigned, same as it would on a real team. That pressure is the point — it's what makes finishing mean something.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">3</div>
+        <h3>The same process for everyone</h3>
+        <p>Tasks are assigned automatically from the same pool, at random, with no manual picking. Your certificate reflects work you actually did, not a favor.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sample-task">
+  <div class="section-inner">
+    <h2>This is what a task actually looks like</h2>
+    <p class="section-desc">Not a vague brief. Every task in the pool ships with real requirements, so your GitHub repo looks like it came from a real job.</p>
+
+    <div class="ticket reveal">
+      <div class="ticket-head">
+        <span class="ticket-id">TASK-014</span>
+        <span class="ticket-tag">Frontend</span>
+      </div>
+      <div class="ticket-body">
+        <h3>Myntra Home Page Clone</h3>
+        <div class="label">Objective</div>
+        <p>Build a pixel-perfect, responsive clone of the Myntra desktop homepage.</p>
+        <div class="label">Tech</div>
+        <p>HTML, CSS, JavaScript — React optional.</p>
+        <div class="label">Must include</div>
+        <ul>
+          <li>Sticky nav bar with working dropdown hover states</li>
+          <li>Image carousel for the main hero banners</li>
+          <li>Dynamic product grid built with CSS Grid or Flexbox</li>
+        </ul>
+      </div>
+      <div class="ticket-foot">
+        <span>Public GitHub repo · hosted on Vercel or GitHub Pages</span>
+        <span class="deadline-chip">+14 days</span>
+      </div>
+    </div>
+    <p class="pool-note">Tasks are drawn at random from the pool for your track, so no two interns get the exact same set.</p>
+  </div>
+</section>
+
+<section id="apply">
+  <div class="section-inner">
+    <h2>Reserve your task slot</h2>
+    <p class="section-desc">This is the only step that requires effort from you before the system takes over. Submit this, and your 3–5 tasks land in your inbox with the deadline attached — what you build after that is entirely yours to show off.</p>
+    <p class="form-batch-note" id="form-batch-note"></p>
+
+    <form id="apply-form">
+      <div class="form-grid">
+        <div class="field">
+          <label for="name">Full name</label>
+          <input id="name" name="name" type="text" required autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" required autocomplete="tel" />
+        </div>
+        <div class="field">
+          <label for="track">Track</label>
+          <select id="track" name="track" required>
+            <option value="" disabled selected>Choose one</option>
+            <option value="frontend">Frontend</option>
+            <option value="backend">Backend</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fee-note">
+        <span>💳</span>
+        <span><strong>Nothing to pay right now.</strong> A one-time ₹49 verification fee applies only after you submit your finished tasks — that's what unlocks your certificate.</span>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submit-btn">Apply for tasks</button>
+      <div class="status-msg" id="status-msg"></div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="section-inner">
+    <p>Built for developers who'd rather have four shipped projects on their GitHub than four hours of lecture videos on their watch history.</p>
+    <span class="fmono">shiptasks.dev</span>
+  </div>
+</footer>
+
+<script type="module">
+  // ------------------------------------------------------------------
+  // FIREBASE SETUP — replace this with your own project's config.
+  // Get it from: Firebase Console → Project Settings → General →
+  // "Your apps" → Web app → SDK setup and configuration.
+  //
+  // FREE-TIER VERSION: this build uses ONLY Firestore + Hosting (Spark
+  // plan, no credit card, no Cloud Functions, no Storage). That means task
+  // assignment and the batch/seat counter run here in the browser instead
+  // of on a trusted server. Firestore Security Rules do what they can to
+  // stop obvious abuse, but a determined visitor with devtools open could
+  // tamper with things a server-side version would have fully locked down.
+  // This is a known, disclosed trade-off of going card-free.
+  // ------------------------------------------------------------------
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  // EmailJS (free, browser-only email sending — no backend needed).
+  // Sign up at emailjs.com, create a service + template, fill these in.
+  // Leave PUBLIC_KEY as-is to skip emailing (tasks still show on-screen).
+  const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY";
+  const EMAILJS_SERVICE_ID = "YOUR_EMAILJS_SERVICE_ID";
+  const EMAILJS_TASKS_TEMPLATE_ID = "YOUR_EMAILJS_TASKS_TEMPLATE_ID";
+
+  const SUBMISSION_URL_BASE = "submit.html"; // same folder as this file
+
+  const MIN_TASKS = 3, MAX_TASKS = 5, DEADLINE_DAYS = 14;
+  const MIN_SEATS = 5, MAX_SEATS = 10, BATCH_LENGTH_MS = 7 * 24 * 60 * 60 * 1000;
+
+  const form = document.getElementById('apply-form');
+  const statusMsg = document.getElementById('status-msg');
+  const submitBtn = document.getElementById('submit-btn');
+  const batchBanner = document.getElementById('batch-banner');
+  const batchTimeText = document.getElementById('batch-time-text');
+  const batchSeatsText = document.getElementById('batch-seats-text');
+  const formBatchNote = document.getElementById('form-batch-note');
+
+  let db, docFns, firebaseReady = false, countdownInterval = null;
+
+  async function initFirebase(){
+    if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+      console.warn("Firebase config is still a placeholder. Fill it in to go live.");
+      return;
+    }
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const app = initializeApp(firebaseConfig);
+    db = fs.getFirestore(app);
+    docFns = fs;
+    firebaseReady = true;
+
+    await ensureCurrentBatch();
+    const batchRef = docFns.doc(db, "meta", "currentBatch");
+    docFns.onSnapshot(batchRef, (snap) => { if (snap.exists()) renderBatch(snap.data()); });
+  }
+  initFirebase();
+
+  /**
+   * Reads meta/currentBatch; if missing or this week's batch has genuinely
+   * ended, creates the next one. Firestore rules only allow this "rollover"
+   * write when the existing batch's endDate has actually passed (or the doc
+   * doesn't exist yet) — see firestore.rules — so a visitor can't just reset
+   * the seat count on a whim, only advance a batch that's truly over.
+   */
+  async function ensureCurrentBatch(){
+    const batchRef = docFns.doc(db, "meta", "currentBatch");
+    const snap = await docFns.getDoc(batchRef);
+    const now = Date.now();
+
+    if (!snap.exists() || snap.data().endDate.toMillis() <= now) {
+      const seatLimit = MIN_SEATS + Math.floor(Math.random() * (MAX_SEATS - MIN_SEATS + 1));
+      const batch = {
+        batchId: `batch-${now}`,
+        startDate: docFns.Timestamp.fromMillis(now),
+        endDate: docFns.Timestamp.fromMillis(now + BATCH_LENGTH_MS),
+        seatLimit,
+        seatsFilled: 0,
+      };
+      try { await docFns.setDoc(batchRef, batch); } catch (err) { console.error("Could not roll over batch:", err); }
+    }
+  }
+
+  function renderBatch(batch){
+    batchBanner.hidden = false;
+    const seatsLeft = Math.max(batch.seatLimit - batch.seatsFilled, 0);
+    const endMillis = batch.endDate.seconds * 1000 + Math.floor(batch.endDate.nanoseconds / 1e6);
+
+    if (countdownInterval) clearInterval(countdownInterval);
+    const tick = () => {
+      const msLeft = endMillis - Date.now();
+      if (msLeft <= 0) {
+        batchTimeText.textContent = "This batch just closed — refresh for the new one";
+        clearInterval(countdownInterval);
+        return;
+      }
+      const days = Math.floor(msLeft / 86400000);
+      const hours = Math.floor((msLeft % 86400000) / 3600000);
+      const mins = Math.floor((msLeft % 3600000) / 60000);
+      batchTimeText.textContent = `${days}d ${hours}h ${mins}m left in this week's batch`;
+    };
+    tick();
+    countdownInterval = setInterval(tick, 60000);
+
+    if (seatsLeft > 0) {
+      batchBanner.classList.remove('full');
+      batchSeatsText.textContent = `${seatsLeft} of ${batch.seatLimit} seats left`;
+      formBatchNote.textContent = `⏳ ${seatsLeft} of ${batch.seatLimit} seats left this batch.`;
+    } else {
+      batchBanner.classList.add('full');
+      batchSeatsText.textContent = `Batch full — next batch starts automatically`;
+      formBatchNote.textContent = `This batch is full. Apply anyway and you'll be first into next week's batch.`;
+    }
+  }
+
+  function pickRandomTasks(allTasks, count){
+    const pool = [...allTasks], picked = [];
+    const n = Math.min(count, pool.length);
+    for (let i = 0; i < n; i++) {
+      const idx = Math.floor(Math.random() * pool.length);
+      picked.push(pool.splice(idx, 1)[0]);
+    }
+    return picked;
+  }
+
+  function showResultPanel(appId, name, tasks, deadline){
+    let panel = document.getElementById('result-panel');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'result-panel';
+      panel.className = 'card';
+      panel.style.marginTop = '20px';
+      form.closest('.section-inner').appendChild(panel);
+    }
+    const submitLink = `${SUBMISSION_URL_BASE}?app=${appId}`;
+    panel.innerHTML = `
+      <h2 style="font-family:var(--display);font-size:18px;margin:0 0 10px;">You're in, ${name} 🎉</h2>
+      <p style="font-size:13.5px;color:var(--muted);margin:0 0 16px;">
+        Your ${tasks.length} tasks are due <strong>${deadline.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</strong>.
+        Bookmark this link — it's how you'll submit your work:
+      </p>
+      <div style="display:flex;gap:8px;margin-bottom:18px;">
+        <input readonly value="${window.location.origin}${window.location.pathname.replace('index.html','').replace(/[^/]*$/,'')}${submitLink}" style="flex:1;font-family:var(--mono);font-size:12px;" id="copy-link-input" />
+        <button class="btn btn-primary" id="copy-link-btn" type="button">Copy</button>
+      </div>
+      ${tasks.map(t => `
+        <div class="ticket" style="margin-bottom:12px;">
+          <div class="ticket-head"><span class="ticket-id">${t.displayId}</span><span class="ticket-tag">${t.track}</span></div>
+          <div class="ticket-body"><h3 style="font-size:16px;">${t.title}</h3><p>${t.objective}</p></div>
+        </div>
+      `).join('')}
+    `;
+    document.getElementById('copy-link-btn').addEventListener('click', () => {
+      const input = document.getElementById('copy-link-input');
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      document.getElementById('copy-link-btn').textContent = 'Copied!';
+    });
+    panel.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  async function sendTaskEmail(name, email, track, tasks, deadline){
+    if (EMAILJS_PUBLIC_KEY === "YOUR_EMAILJS_PUBLIC_KEY") return; // not configured, skip silently
+    try{
+      const emailjsMod = await import("https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.es.min.js");
+      emailjsMod.init(EMAILJS_PUBLIC_KEY);
+      const tasksText = tasks.map(t => `${t.displayId} — ${t.title}\n${t.objective}\nTech: ${(t.techRequirements||[]).join(', ')}`).join('\n\n');
+      await emailjsMod.send(EMAILJS_SERVICE_ID, EMAILJS_TASKS_TEMPLATE_ID, {
+        to_email: email,
+        to_name: name,
+        track,
+        deadline: deadline.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}),
+        tasks_text: tasksText,
+        submit_link: `${window.location.origin}${window.location.pathname.replace(/[^/]*$/,'')}${SUBMISSION_URL_BASE}`,
+      });
+    }catch(err){
+      console.error("EmailJS send failed (tasks still shown on-screen):", err);
+    }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    statusMsg.className = 'status-msg';
+    statusMsg.textContent = '';
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const track = document.getElementById('track').value;
+
+    try{
+      if (!firebaseReady) {
+        console.log("Demo mode (Firebase not configured):", { name, email, phone, track });
+        statusMsg.className = 'status-msg ok';
+        statusMsg.textContent = '✓ Form works. Add your Firebase config in the script to go live.';
+        form.reset();
+        return;
+      }
+
+      await ensureCurrentBatch();
+      const batchRef = docFns.doc(db, "meta", "currentBatch");
+      const batchSnap = await docFns.getDoc(batchRef);
+      const batch = batchSnap.data();
+      const seatAvailable = batch.seatsFilled < batch.seatLimit;
+
+      // Pull the task pool for this track and assign 3–5 right here in the
+      // browser (see the notice at the top of this script re: trade-offs).
+      const tasksQuery = docFns.query(
+        docFns.collection(db, "tasks"),
+        docFns.where("track", "==", track),
+        docFns.where("active", "==", true)
+      );
+      const tasksSnap = await docFns.getDocs(tasksQuery);
+      const allTasks = tasksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      if (allTasks.length === 0) {
+        throw new Error("No tasks available for this track — the task pool may not be seeded yet.");
+      }
+
+      const desiredCount = MIN_TASKS + Math.floor(Math.random() * (MAX_TASKS - MIN_TASKS + 1));
+      const chosen = pickRandomTasks(allTasks, desiredCount);
+      const assignedTasks = chosen.map(t => ({
+        id: t.id, displayId: t.displayId, title: t.title, track: t.track,
+        objective: t.objective, techRequirements: t.techRequirements || [],
+        mustInclude: t.mustInclude || [], submissionNotes: t.submissionNotes || "",
+      }));
+      const now = Date.now();
+      const deadline = new Date(now + DEADLINE_DAYS * 24 * 60 * 60 * 1000);
+
+      const appRef = docFns.doc(docFns.collection(db, "applications"));
+      const status = seatAvailable ? "assigned" : "waitlisted";
+
+      await docFns.setDoc(appRef, {
+        name, email, phone, track,
+        status,
+        batchId: batch.batchId,
+        assignedTaskIds: seatAvailable ? chosen.map(t => t.id) : [],
+        assignedTasks: seatAvailable ? assignedTasks : [],
+        assignedAt: seatAvailable ? docFns.Timestamp.now() : null,
+        deadline: seatAvailable ? docFns.Timestamp.fromMillis(now + DEADLINE_DAYS * 24 * 60 * 60 * 1000) : null,
+        createdAt: docFns.serverTimestamp(),
+      });
+
+      if (seatAvailable) {
+        await docFns.updateDoc(batchRef, { seatsFilled: batch.seatsFilled + 1 });
+        statusMsg.className = 'status-msg ok';
+        statusMsg.textContent = '✓ You\'re assigned! Tasks are below — save that link.';
+        showResultPanel(appRef.id, name, assignedTasks, deadline);
+        sendTaskEmail(name, email, track, assignedTasks, deadline);
+      } else {
+        statusMsg.className = 'status-msg ok';
+        statusMsg.textContent = '✓ This batch is full — you\'re first in line for next week\'s batch.';
+      }
+      form.reset();
+    }catch(err){
+      console.error(err);
+      statusMsg.className = 'status-msg err';
+      statusMsg.textContent = '✗ ' + (err.message || 'Something went wrong — please try again.');
+    }finally{
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Apply for tasks';
+    }
+  });
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('in'); });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

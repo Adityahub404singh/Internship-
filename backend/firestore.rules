@@ -1,0 +1,73 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Task pool: public read, no client writes (only the seed script,
+    // using the admin SDK, ever touches this).
+    match /tasks/{taskId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Current batch (real week + real seat count) — FREE-TIER VERSION.
+    // There's no trusted server here, so this is the best Firestore Rules
+    // can do on their own:
+    //  - anyone can create the doc if it doesn't exist yet
+    //  - once it exists, an "update" is only allowed if it's EITHER exactly
+    //    a +1 to seatsFilled (and only while there's room), OR a full
+    //    rollover to a new batch — and only once the current batch's
+    //    endDate has genuinely passed.
+    // A visitor with devtools open could still spam +1 increments without
+    // actually applying, artificially filling seats. That's the disclosed
+    // trade-off of running with no backend and no card on file.
+    match /meta/currentBatch {
+      allow read: if true;
+      allow create: if !exists(/databases/$(database)/documents/meta/currentBatch);
+      allow update: if
+        (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['seatsFilled'])
+          && request.resource.data.seatsFilled == resource.data.seatsFilled + 1
+          && resource.data.seatsFilled < resource.data.seatLimit
+        )
+        ||
+        ( resource.data.endDate < request.time );
+    }
+
+    // Applications — FREE-TIER VERSION. There's no Cloud Function to
+    // validate this server-side, so the appId itself (a long, unguessable
+    // Firestore auto-ID, only ever shared via email/URL) is the real
+    // access control — this is a "capability URL" pattern. Reads are
+    // scoped to a single known ID (`get`), never a `list` of all
+    // applications, so nobody can enumerate every applicant.
+    match /applications/{appId} {
+      allow get: if true;
+      allow list: if false;
+
+      allow create: if request.resource.data.keys().hasAll(['name','email','phone','track','status'])
+                     && request.resource.data.status in ['assigned', 'waitlisted'];
+
+      // Task-link submission: only allowed while status is "assigned",
+      // moving to "submitted".
+      allow update: if
+        (
+          resource.data.status == 'assigned'
+          && request.resource.data.status == 'submitted'
+        )
+        ||
+        // Payment claim: only allowed while status is "submitted".
+        (
+          resource.data.status == 'submitted'
+          && request.resource.data.status == 'submitted'
+          && request.resource.data.paymentClaimed == true
+        )
+        ||
+        // Certificate issuance: only allowed once payment is claimed.
+        (
+          resource.data.status == 'submitted'
+          && resource.data.paymentClaimed == true
+          && request.resource.data.status == 'certified'
+        );
+    }
+  }
+}

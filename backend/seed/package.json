@@ -1,0 +1,10 @@
+{
+  "name": "internship-platform-seed",
+  "private": true,
+  "scripts": {
+    "seed": "node seed-tasks.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.1.0"
+  }
+}
