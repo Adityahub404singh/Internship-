@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin — Dev Internship</title>
+<meta name="robots" content="noindex, nofollow">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+ :root{--indigo:#4b3fcf;--purple:#7c3aed;--bg:#F7F6FE;--border:#ECEBFB;--text:#10151C;--muted:#8B93A3;}
+ *{box-sizing:border-box;}
+ body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);margin:0;padding:24px;color:var(--text);}
+ .wrap{max-width:900px;margin:0 auto;}
+ h1{font-size:22px;background:linear-gradient(90deg,var(--indigo),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:4px;}
+ .sub{color:var(--muted);font-size:13px;margin-bottom:24px;}
+ .card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;}
+ .row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+ .name{font-weight:700;font-size:15px;}
+ .meta{color:var(--muted);font-size:12px;margin-top:2px;}
+ .track{display:inline-block;background:var(--border);color:var(--indigo);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase;margin-top:6px;}
+ .taskcount{color:var(--muted);font-size:12px;margin-top:8px;}
+ .deadline{color:var(--muted);font-size:12px;margin-top:2px;}
+ button.approve{background:linear-gradient(90deg,var(--indigo),var(--purple));color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;}
+ button.approve:disabled{opacity:.5;cursor:default;}
+ .badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;}
+ .badge.sent{background:#DCFCE7;color:#166534;}
+ .empty{color:var(--muted);text-align:center;padding:40px;}
+ #gate{max-width:320px;margin:80px auto;text-align:center;}
+ #gate input{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin:12px 0;font-size:14px;}
+ #gate button{width:100%;padding:10px;background:linear-gradient(90deg,var(--indigo),var(--purple));color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;}
+ .err{color:#DC2626;font-size:12px;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+ <h1>Admin Access</h1>
+ <input type="password" id="pwInput" placeholder="Enter admin password">
+ <button id="pwBtn">Enter</button>
+ <div class="err" id="pwErr"></div>
+</div>
+
+<div class="wrap" id="panel" style="display:none;">
+ <h1>New Applicants</h1>
+ <div class="sub">Approve to send the task email and offer email together. List updates live.</div>
+ <div id="list"></div>
+</div>
+
+<script type="module">
+ const ADMIN_PASSWORD = "Aditya123#";
+
+ const gate = document.getElementById('gate');
+ const panel = document.getElementById('panel');
+
+ function unlock(){
+   gate.style.display = 'none';
+   panel.style.display = 'block';
+   init();
+ }
+
+ document.getElementById('pwBtn').addEventListener('click', () => {
+   const val = document.getElementById('pwInput').value;
+   if(val === ADMIN_PASSWORD){
+     sessionStorage.setItem('adminOk','1');
+     unlock();
+   } else {
+     document.getElementById('pwErr').textContent = 'Wrong password.';
+   }
+ });
+
+ if(sessionStorage.getItem('adminOk') === '1'){ unlock(); }
+
+ const firebaseConfig = {
+   apiKey: "AIzaSyBX1a6jx2YlyzJOQ9Fr9fnZ6BCCwwN-FBQ",
+   authDomain: "internship-764c3.firebaseapp.com",
+   projectId: "internship-764c3",
+   storageBucket: "internship-764c3.firebasestorage.app",
+   messagingSenderId: "678513496959",
+   appId: "1:678513496959:web:9163a84e50ebe9d642004a"
+ };
+
+ const EMAILJS_PUBLIC_KEY = "IcT1qOhZvYmcrvua1";
+ const EMAILJS_SERVICE_ID = "service_5qhty2d";
+ const EMAILJS_TASKS_TEMPLATE_ID = "template_kblft3d";
+ const EMAILJS_OFFER_TEMPLATE_ID = "template_iwbdywa";
+ const SUBMISSION_URL_BASE = "submit.html";
+
+ let db, fs;
+ let currentRows = {}; // id -> full application record, kept in sync with the live query
+
+ async function init(){
+   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+   fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+   const app = initializeApp(firebaseConfig);
+   db = fs.getFirestore(app);
+
+   if(window.emailjs && EMAILJS_PUBLIC_KEY){
+     window.emailjs.init(EMAILJS_PUBLIC_KEY);
+   }
+
+   const q = fs.query(fs.collection(db,"applications"), fs.where("status","==","assigned"));
+   fs.onSnapshot(q, (snap) => {
+     const rows = [];
+     currentRows = {};
+     snap.forEach(d => {
+       const data = { id: d.id, ...d.data() };
+       currentRows[d.id] = data;
+       rows.push(data);
+     });
+     render(rows);
+   });
+ }
+
+ function escapeHtml(s){
+   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ }
+
+ function formatDate(ts){
+   if(!ts || !ts.toDate) return '—';
+   return ts.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+ }
+
+ function render(rows){
+   const list = document.getElementById('list');
+   if(rows.length === 0){
+     list.innerHTML = '<div class="empty">No new applicants right now.</div>';
+     return;
+   }
+   list.innerHTML = rows.map(cardHtml).join('');
+ }
+
+ function cardHtml(r){
+   const sent = r.emailsSent === true;
+   const actionHtml = sent
+     ? '<span class="badge sent">Emails Sent</span>'
+     : '<button class="approve">Approve</button>';
+   const taskCount = (r.assignedTasks || []).length;
+   return `
+     <div class="card" data-id="${escapeHtml(r.id)}">
+       <div class="row">
+         <div>
+           <div class="name">${escapeHtml(r.name || '')}</div>
+           <div class="meta">${escapeHtml(r.email || '')} &middot; ${escapeHtml(r.phone || '')}</div>
+           <span class="track">${escapeHtml(r.track || '')}</span>
+           <div class="taskcount">${taskCount} task${taskCount === 1 ? '' : 's'} assigned</div>
+           <div class="deadline">Deadline: ${formatDate(r.deadline)}</div>
+         </div>
+         <div>${actionHtml}</div>
+       </div>
+     </div>
+   `;
+ }
+
+ function buildTasksText(tasks){
+   return tasks.map((t, i) => `
+----------------------------------------
+TASK ${i + 1} -- ${t.displayId}
+----------------------------------------
+${t.title}
+
+OBJECTIVE:
+${t.objective}
+
+TECH STACK:
+${(t.techRequirements || []).join(' | ')}
+
+MUST INCLUDE:
+${(t.mustInclude || []).map(f => `  - ${f}`).join('\n')}
+
+SUBMIT:
+${t.submissionNotes || 'Public GitHub repo + hosted live link'}
+`).join('\n\n');
+ }
+
+ document.getElementById('list').addEventListener('click', async (e) => {
+   const btn = e.target.closest('.approve');
+   if(!btn) return;
+   const card = btn.closest('.card');
+   const id = card.dataset.id;
+   const r = currentRows[id];
+   if(!r){ alert('Record not found, try refreshing.'); return; }
+
+   btn.disabled = true;
+   btn.textContent = 'Approving...';
+
+   try{
+     await fs.updateDoc(fs.doc(db, "applications", id), {
+       emailsSent: true,
+       emailsSentAt: fs.serverTimestamp(),
+     });
+
+     if(window.emailjs){
+       const deadlineStr = formatDate(r.deadline);
+       const tasksText = buildTasksText(r.assignedTasks || []);
+       const submitLink = `${window.location.origin}${window.location.pathname.replace('admin.html','')}${SUBMISSION_URL_BASE}?app=${id}`;
+
+       // Task email
+       window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TASKS_TEMPLATE_ID, {
+         to_email: r.email,
+         to_name: r.name,
+         track: r.track,
+         deadline: deadlineStr,
+         tasks_text: tasksText,
+         submit_link: submitLink,
+       }).catch(err => console.error("Task email failed:", err));
+
+       // Offer email
+       window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_OFFER_TEMPLATE_ID, {
+         to_name: r.name,
+         to_email: r.email,
+         track: r.track,
+         start_date: deadlineStr,
+         offer_message: 'Congratulations! You have been selected for the ' + r.track + ' internship track.',
+       }).catch(err => console.error("Offer email failed:", err));
+     }
+   }catch(err){
+     alert('Approve failed: ' + err.message);
+     btn.disabled = false;
+     btn.textContent = 'Approve';
+   }
+ });
+</script>
+</body>
+</html>

@@ -764,24 +764,19 @@ const EMAILJS_TASKS_TEMPLATE_ID = "template_kblft3d";
   function sendTaskEmail(name, email, track, tasks, deadline){
     if (EMAILJS_PUBLIC_KEY === "YOUR_EMAILJS_PUBLIC_KEY" || !window.emailjs) return;
     try{
-      const tasksText = tasks.map((t, i) => `
-----------------------------------------
-TASK ${i + 1} -- ${t.displayId}
-----------------------------------------
-${t.title}
+      const tasksText = tasks.map((t, i) => `TASK ${i + 1} — ${t.displayId}: ${t.title}
 
-OBJECTIVE:
+Objective:
 ${t.objective}
 
-TECH STACK:
-${(t.techRequirements || []).join(' | ')}
+Tech stack: ${(t.techRequirements || []).join(', ')}
 
-MUST INCLUDE:
-${(t.mustInclude || []).map(f => "`  - ${f}`").join('\n')}
+Must include:
+${(t.mustInclude || []).map(f => `  • ${f}`).join('\n')}
 
-SUBMIT:
+Submission requirement:
 ${t.submissionNotes || 'Public GitHub repo + hosted live link'}
-`).join('\n\n');
+`).join('\n----------------------------------------\n\n');
 
       window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TASKS_TEMPLATE_ID, {
         to_email: email,
@@ -872,6 +867,7 @@ ${t.submissionNotes || 'Public GitHub repo + hosted live link'}
         statusMsg.className = 'status-msg ok';
         statusMsg.textContent = '✓ You\'re assigned! Tasks are below — save that link.';
         showResultPanel(appRef.id, name, assignedTasks, deadline);
+        sendTaskEmail(name, email, track, assignedTasks, deadline);
       } else {
         statusMsg.className = 'status-msg ok';
         statusMsg.textContent = '✓ This batch is full — you\'re first in line for next week\'s batch.';

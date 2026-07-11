@@ -3,205 +3,210 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Submit Your Work — ShipTasks</title>
+<title>Internship Submission Portal | ShipTasks</title>
 <meta name="robots" content="noindex, nofollow" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B0E14'/%3E%3Crect x='6' y='6' width='20' height='20' rx='4' fill='%238B7CFF'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='13' font-weight='700' fill='white' text-anchor='middle'%3EST%3C/text%3E%3C/svg%3E" />
-<meta name="theme-color" content="#0B0E14" />
+<meta name="theme-color" content="#050505" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
-  :root{
-    --ink: #0B0E14;
-    --ink-soft: #131722;
-    --panel: #171B26;
-    --panel-raised: #1C212F;
-    --line: #2A3040;
-    --line-soft: #20242F;
-    --text: #F3F5F8;
-    --muted: #8B93A3;
-    --muted-dim: #626A7A;
-    --violet: #8B7CFF;
-    --violet-dim: #6E5FE0;
-    --violet-glow: rgba(139,124,255,0.35);
-    --gold: #F0B94D;
-    --gold-bg: rgba(240,185,77,0.12);
-    --emerald: #34D399;
-    --emerald-bg: rgba(52,211,153,0.12);
-    --red: #F87171;
-    --red-bg: rgba(248,113,113,0.12);
-    --radius: 10px;
+  :root {
+    --bg-dark: #050505;
+    --bg-glow: radial-gradient(circle at 50% 0%, #1a1638 0%, #050505 70%);
+    --panel: rgba(20, 22, 30, 0.6);
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --line: rgba(255, 255, 255, 0.12);
+    --text-main: #FFFFFF;
+    --text-muted: #A1A1AA;
+    --brand-primary: #8B7CFF;
+    --brand-hover: #A396FF;
+    --brand-glow: rgba(139, 124, 255, 0.4);
+    --success: #10B981;
+    --success-bg: rgba(16, 185, 129, 0.1);
+    --warning: #F59E0B;
+    --warning-bg: rgba(245, 158, 11, 0.1);
+    --radius: 12px;
     --mono: 'JetBrains Mono', ui-monospace, monospace;
     --display: 'Space Grotesk', sans-serif;
     --body: 'Inter', sans-serif;
   }
-  *{ box-sizing: border-box; }
-  body{
-    margin:0; min-height:100vh;
-    background: var(--ink);
-    color: var(--text); font-family: var(--body); line-height:1.55;
+  
+  * { box-sizing: border-box; }
+  
+  body {
+    margin: 0; 
+    min-height: 100vh;
+    background: var(--bg-dark);
+    background-image: var(--bg-glow);
+    color: var(--text-main); 
+    font-family: var(--body); 
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap{ max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  
+  .wrap { max-width: 680px; margin: 0 auto; padding: 0 24px; }
 
-  nav.top{
-    display:flex; align-items:center; padding: 22px 24px; max-width: 720px; margin: 0 auto;
-    position: sticky; top:0; z-index: 10;
-    background: rgba(11,14,20,0.72); backdrop-filter: blur(10px);
+  nav.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 0; max-width: 680px; margin: 0 auto 20px;
+    border-bottom: 1px solid var(--panel-border);
   }
-  .logo{
-    font-family: var(--display); font-weight:700; font-size:16px; letter-spacing:-0.01em;
-    display:flex; align-items:center; gap:9px;
+  
+  .logo {
+    font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: -0.02em;
+    display: flex; align-items: center; gap: 12px;
   }
-  .logo .mark{
-    width:20px; height:20px; border-radius: 5px;
-    background: linear-gradient(135deg, var(--violet), #5B4FE0);
-    display:inline-flex; align-items:center; justify-content:center;
-    font-family: var(--mono); font-size: 11px; font-weight:600; color:#fff;
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 4px 14px rgba(139,124,255,0.35);
+  
+  .logo .mark {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: linear-gradient(135deg, var(--brand-primary), #5B4FE0);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 12px; font-weight: 700; color: #fff;
+    box-shadow: 0 0 20px var(--brand-glow);
   }
 
-  main{ padding: 32px 24px 90px; }
-  .eyebrow{
-    font-family: var(--mono); font-size: 12px; color: var(--violet);
-    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px;
-    display:flex; align-items:center; gap:8px;
+  main { padding-bottom: 100px; }
+  
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; color: var(--brand-primary);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 600;
   }
-  .eyebrow .pip{ width:6px; height:6px; border-radius:50%; background: var(--violet); box-shadow: 0 0 8px var(--violet-glow); }
-  h1{ font-family: var(--display); font-size: clamp(26px,4vw,34px); margin: 0 0 10px; font-weight:700; letter-spacing:-0.01em; }
-  .sub{ color: var(--muted); font-size:15px; margin: 0 0 32px; max-width: 560px; }
+  
+  .eyebrow .pip { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-primary); box-shadow: 0 0 10px var(--brand-primary); }
+  
+  h1 { font-family: var(--display); font-size: clamp(28px, 5vw, 40px); margin: 0 0 12px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .sub { color: var(--text-muted); font-size: 16px; margin: 0 0 40px; font-weight: 300; }
 
-  /* STEPPER */
-  .stepper{ display:flex; gap:0; margin-bottom: 36px; background: var(--panel); border:1px solid var(--line); border-radius: var(--radius); overflow:hidden; }
-  .step{ flex:1; padding: 16px 18px; border-right: 1px solid var(--line-soft); }
-  .step:last-child{ border-right:none; }
-  .step-status{ font-family: var(--mono); font-size: 10px; text-transform:uppercase; letter-spacing:0.06em; padding:4px 9px; border-radius: 20px; display:inline-block; margin-bottom:8px; }
-  .step-status.done{ background: var(--emerald-bg); color: var(--emerald); border:1px solid rgba(52,211,153,0.25); }
-  .step-status.active{ background: var(--gold-bg); color: var(--gold); border:1px solid rgba(240,185,77,0.25); }
-  .step-status.queued{ background: var(--line-soft); color: var(--muted-dim); border:1px solid var(--line); }
-  .step p{ margin:0; font-family: var(--display); font-size:13.5px; font-weight:600; }
+  .stepper { display: flex; gap: 12px; margin-bottom: 40px; }
+  .step { flex: 1; padding: 16px; background: var(--panel); backdrop-filter: blur(10px); border: 1px solid var(--panel-border); border-radius: var(--radius); }
+  .step-status { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 8px; font-weight: 600; }
+  .step-status.done { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+  .step-status.active { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+  .step-status.queued { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--line); }
+  .step p { margin: 0; font-family: var(--display); font-size: 14px; font-weight: 600; color: #E4E4E7; }
 
-  /* CARD */
-  .card{ background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 26px; margin-bottom: 20px; box-shadow: 0 20px 50px -25px rgba(0,0,0,0.6); }
-  .card h2{ font-family: var(--display); font-size: 19px; margin: 0 0 6px; font-weight:600; }
-  .card .desc{ font-size: 13.5px; color: var(--muted); margin: 0 0 22px; }
+  .card { 
+    background: var(--panel); 
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--panel-border); 
+    border-radius: 16px; 
+    padding: 32px; 
+    margin-bottom: 24px; 
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+  .card:hover { border-color: rgba(255,255,255,0.15); }
+  
+  .card h2 { font-family: var(--display); font-size: 22px; margin: 0 0 8px; font-weight: 600; letter-spacing: -0.01em; }
+  .card .desc { font-size: 14.5px; color: var(--text-muted); margin: 0 0 28px; line-height: 1.6; }
 
-  label{ font-family: var(--mono); font-size:11.5px; color: var(--muted); text-transform:uppercase; letter-spacing:0.05em; display:block; margin-bottom:7px; }
-  input{
-    width:100%; font-family: var(--body); font-size: 15px; padding: 12px 14px;
+  label { font-family: var(--mono); font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px; }
+  
+  input {
+    width: 100%; font-family: var(--mono); font-size: 14px; padding: 14px 16px;
     border: 1px solid var(--line); border-radius: 8px;
-    background: var(--ink-soft); color: var(--text); margin-bottom: 18px;
+    background: rgba(0,0,0,0.3); color: var(--text-main); margin-bottom: 24px;
+    transition: all 0.2s ease;
   }
-  input::placeholder{ color: var(--muted-dim); }
-  input:focus{ outline: none; border-color: var(--violet); box-shadow: 0 0 0 3px rgba(139,124,255,0.18); }
+  input::placeholder { color: #52525B; }
+  input:focus { outline: none; border-color: var(--brand-primary); background: rgba(139, 124, 255, 0.05); box-shadow: 0 0 0 4px rgba(139, 124, 255, 0.1); }
 
-  .btn{ font-family: var(--mono); font-size: 14px; font-weight:600; padding: 14px 22px; border-radius: 30px; border: none; cursor:pointer; transition: transform .15s ease, box-shadow .15s ease; }
-  .btn-primary{ background: linear-gradient(100deg, var(--violet-dim), var(--violet)); color: #fff; box-shadow: 0 8px 24px rgba(139,124,255,0.35); }
-  .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 12px 30px rgba(139,124,255,0.45); }
-  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
-  .btn-full{ width:100%; }
+  .btn { font-family: var(--display); font-size: 15px; font-weight: 600; padding: 16px 24px; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s ease; display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
+  .btn-primary { background: var(--text-main); color: var(--bg-dark); box-shadow: 0 4px 14px rgba(255,255,255,0.1); }
+  .btn-primary:hover { transform: translateY(-1px); background: #E4E4E7; box-shadow: 0 6px 20px rgba(255,255,255,0.15); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+  .btn-brand { background: var(--brand-primary); color: #fff; box-shadow: 0 8px 25px var(--brand-glow); }
+  .btn-brand:hover { background: var(--brand-hover); transform: translateY(-1px); box-shadow: 0 12px 30px var(--brand-glow); }
+  .btn-full { width: 100%; }
 
-  .task-item{ border-top: 1px solid var(--line-soft); padding-top:20px; margin-top:20px; }
-  .task-item:first-of-type{ border-top:none; margin-top:0; padding-top:0; }
-  .task-item .tid{ font-family: var(--mono); font-size:11px; color: var(--muted-dim); margin-bottom:4px; }
-  .task-item .ttitle{ font-family: var(--display); font-size:15.5px; margin-bottom:14px; font-weight:600; }
+  .task-item { border-top: 1px solid var(--panel-border); padding-top: 24px; margin-top: 24px; }
+  .task-item:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+  .task-item .tid { font-family: var(--mono); font-size: 12px; color: var(--brand-primary); margin-bottom: 6px; font-weight: 500; }
+  .task-item .ttitle { font-family: var(--display); font-size: 18px; margin-bottom: 20px; font-weight: 600; letter-spacing: -0.01em; }
 
-  .status-msg{ font-family: var(--mono); font-size: 13px; margin-top: 12px; }
-  .status-msg.ok{ color: var(--emerald); }
-  .status-msg.err{ color: var(--red); }
+  .status-msg { font-family: var(--mono); font-size: 13px; margin-top: 16px; text-align: center; }
+  .status-msg.ok { color: var(--success); }
+  .status-msg.err { color: #EF4444; background: rgba(239, 68, 68, 0.1); padding: 12px; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.2); }
 
-  .cert-box{ text-align:center; padding: 14px 0; }
-  .cert-icon{
-    width:58px; height:58px; border-radius:50%; background: var(--emerald-bg); color: var(--emerald);
-    display:flex; align-items:center; justify-content:center; font-size:28px; margin: 0 auto 18px;
-    border: 1px solid rgba(52,211,153,0.3);
+  .cert-box { text-align: center; padding: 20px 0; }
+  .cert-icon {
+    width: 64px; height: 64px; border-radius: 50%; background: var(--success-bg); color: var(--success);
+    display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px;
+    border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
   }
-  .cert-id{ font-family: var(--mono); font-size:12px; color: var(--muted-dim); margin: 12px 0 22px; }
-  .btn-download{
-    display:inline-block; background: linear-gradient(100deg, var(--violet-dim), var(--violet)); color:#fff;
-    font-family: var(--mono); font-size:14px; font-weight:600; padding: 14px 24px; border-radius: 30px;
-    text-decoration:none; border:none; cursor:pointer; box-shadow: 0 8px 24px rgba(139,124,255,0.35);
-  }
+  .cert-id { font-family: var(--mono); font-size: 14px; color: var(--text-muted); margin: 16px 0 32px; background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 6px; display: inline-block; border: 1px solid var(--line); }
 
-  .spinner{ width:18px; height:18px; border: 2px solid var(--line); border-top-color: var(--violet); border-radius:50%; display:inline-block; animation: spin 0.8s linear infinite; vertical-align:middle; margin-right:8px; }
-  @keyframes spin{ to{ transform: rotate(360deg); } }
+  .spinner { width: 20px; height: 20px; border: 2px solid var(--line); border-top-color: var(--brand-primary); border-radius: 50%; display: inline-block; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 10px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .hidden{ display:none !important; }
-  .center-note{ text-align:center; font-size: 13.5px; color: var(--muted-dim); }
+  .hidden { display: none !important; }
+  .center-note { text-align: center; font-size: 14px; color: var(--text-muted); margin-top: 12px; }
 </style>
 </head>
 <body>
 
-<nav class="top"><div class="logo"><span class="mark">ST</span>ShipTasks</div></nav>
+<nav class="top">
+  <div class="logo"><span class="mark">ST</span>ShipTasks</div>
+  <div style="font-family: var(--mono); font-size: 12px; color: var(--text-muted);">Intern Portal</div>
+</nav>
 
 <main class="wrap">
-  <div class="eyebrow"><span class="pip"></span>Submission Portal</div>
-  <h1 id="page-title">Submit your work</h1>
-  <p class="sub" id="page-sub">Confirm your email to pull up your assigned tasks.</p>
+  <div class="eyebrow"><span class="pip"></span>Candidate Authentication</div>
+  <h1 id="page-title">Internship Portal</h1>
+  <p class="sub" id="page-sub">Verify your identity to access project submissions and certification.</p>
 
   <div class="stepper" id="stepper">
-    <div class="step"><span class="step-status active" id="s1-status">Step 1</span><p>Submit work</p></div>
-    <div class="step"><span class="step-status queued" id="s2-status">Step 2</span><p>Verify</p></div>
-    <div class="step"><span class="step-status queued" id="s3-status">Step 3</span><p>Get certified</p></div>
+    <div class="step"><span class="step-status active" id="s1-status">Phase 1</span><p>Submit Deliverables</p></div>
+    <div class="step"><span class="step-status queued" id="s2-status">Phase 2</span><p>Verification</p></div>
+    <div class="step"><span class="step-status queued" id="s3-status">Phase 3</span><p>Certification</p></div>
   </div>
 
-  <!-- GATE -->
   <div class="card" id="gate-card">
-    <h2>Confirm it's you</h2>
-    <p class="desc">Enter the email you applied with.</p>
-    <label for="gate-email">Email</label>
-    <input id="gate-email" type="email" placeholder="you@example.com" required />
-    <button class="btn btn-primary btn-full" id="gate-btn">View my tasks</button>
+    <h2>Secure Login</h2>
+    <p class="desc">Enter the email address associated with your ShipTasks application.</p>
+    <label for="gate-email">Candidate Email</label>
+    <input id="gate-email" type="email" placeholder="intern@example.com" required />
+    <button class="btn btn-primary btn-full" id="gate-btn">Authenticate Access</button>
     <div class="status-msg" id="gate-msg"></div>
   </div>
 
-  <!-- TASK SUBMISSION -->
   <div class="card hidden" id="tasks-card">
-    <h2>Your assigned tasks</h2>
-    <p class="desc">Paste your GitHub repo and live hosted link for each task.</p>
+    <h2>Project Deliverables</h2>
+    <p class="desc">Provide the source code and deployment links for your assigned engineering tasks.</p>
     <div id="task-list"></div>
-    <button class="btn btn-primary btn-full" id="submit-links-btn" style="margin-top:8px;">Submit all links</button>
+    <button class="btn btn-brand btn-full" id="submit-links-btn" style="margin-top:12px;">Submit Projects for Review</button>
     <div class="status-msg" id="tasks-msg"></div>
   </div>
 
-  <!-- GENERATING -->
   <div class="card hidden" id="generating-card">
     <div class="cert-box">
-      <p><span class="spinner"></span>Verifying &amp; generating your certificate…</p>
-      <p class="center-note">This usually takes a few seconds. Don't close this tab.</p>
+      <p style="font-family: var(--display); font-size: 18px; font-weight: 600;"><span class="spinner"></span>Processing Verification...</p>
+      <p class="center-note">Minting your official credential. Please do not close this window.</p>
     </div>
   </div>
 
-  <!-- CERTIFIED -->
   <div class="card hidden" id="certified-card">
     <div class="cert-box">
       <div class="cert-icon">✓</div>
-      <h2>You're certified</h2>
-      <p class="desc">Your certificate has also been emailed to you.</p>
-      <p class="cert-id" id="cert-id-text"></p>
-      <button class="btn-download" id="cert-download-link" type="button">Download certificate</button>
+      <h2>Verification Complete</h2>
+      <p class="desc">Congratulations. Your technical projects have been recorded and your internship is complete.</p>
+      <div class="cert-id" id="cert-id-text"></div>
+      <br>
+      <button class="btn btn-brand" id="cert-download-link" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download Official Certificate
+      </button>
     </div>
   </div>
 </main>
 
 <script type="module">
-  // ------------------------------------------------------------------
-  // Same Firebase project as index.html — fill in your real config.
-  //
-  // FREE-TIER VERSION: no Cloud Functions, so:
-  //  - identity check (email match) happens here in the browser, not on a
-  //    trusted server — the appId itself (a long random Firestore ID) is
-  //    the real access gate.
-  //  - Razorpay payment is NOT cryptographically verified (that requires
-  //    your secret key, which must never live in browser code). This marks
-  //    payment as "claimed" — cross-check against your Razorpay dashboard
-  //    if that matters for your use case.
-  //  - The certificate PDF is generated right here in the browser (pdf-lib)
-  //    and downloaded directly — nothing is stored server-side.
-  // ------------------------------------------------------------------
   const firebaseConfig = {
     apiKey: "AIzaSyBX1a6jx2YlyzJOQ9Fr9fnZ6BCCwwN-FBQ",
     authDomain: "internship-764c3.firebaseapp.com",
@@ -211,21 +216,12 @@
     appId: "1:678513496959:web:9163a84e50ebe9d642004a"
   };
 
-  // Razorpay public Key ID only — never put the Key Secret in browser code.
-  // The Razorpay checkout window itself always shows the amount and the
-  // merchant name to the payer before they pay — that's Razorpay's own
-  // requirement, not something this page controls or can hide.
-  const RAZORPAY_KEY_ID = "rzp_test_SveAvj6ljoj11l";
+  const RAZORPAY_KEY_ID = "rzp_test_SveAvj6Ijoj11l";
   const CERTIFICATION_FEE_PAISE = 4900;
 
-  // EmailJS — same account/service as index.html. TEMPLATE_ID here should
-  // point at a "certificate ready" template. If you haven't made a
-  // separate one yet, this reuses the task-assignment template ID as a
-  // placeholder — make a dedicated one in EmailJS when you get a chance,
-  // using variables: {{to_email}}, {{to_name}}, {{cert_id}}.
   const EMAILJS_PUBLIC_KEY = "IcT1qOhZvYmcrvua1";
   const EMAILJS_SERVICE_ID = "service_5qhty2d";
-const EMAILJS_CERT_TEMPLATE_ID = "template_kblft3d";
+  const EMAILJS_CERT_TEMPLATE_ID = "template_kblft3d";
 
   const params = new URLSearchParams(window.location.search);
   const appId = params.get("app");
@@ -253,20 +249,12 @@ const EMAILJS_CERT_TEMPLATE_ID = "template_kblft3d";
   let currentAppId = appId, currentApp = null, currentTasks = [];
 
   async function initFirebase(){
-    if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-      els.gateMsg.className = 'status-msg err';
-      els.gateMsg.textContent = 'Firebase config is a placeholder — fill it in to go live.';
-      return;
-    }
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
     fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
     const app = initializeApp(firebaseConfig);
     db = fs.getFirestore(app);
     firebaseReady = true;
-
-    if (EMAILJS_PUBLIC_KEY !== "YOUR_EMAILJS_PUBLIC_KEY" && window.emailjs) {
-      window.emailjs.init(EMAILJS_PUBLIC_KEY);
-    }
+    if (window.emailjs) window.emailjs.init(EMAILJS_PUBLIC_KEY);
   }
   initFirebase();
 
@@ -285,9 +273,9 @@ const EMAILJS_CERT_TEMPLATE_ID = "template_kblft3d";
       <div class="task-item">
         <div class="tid">${t.displayId}</div>
         <div class="ttitle">${t.title}</div>
-        <label for="gh-${i}">GitHub repo URL</label>
-        <input id="gh-${i}" type="url" placeholder="https://github.com/you/repo" required />
-        <label for="live-${i}">Live hosted URL</label>
+        <label for="gh-${i}">GitHub Repository URL</label>
+        <input id="gh-${i}" type="url" placeholder="https://github.com/username/repo" required />
+        <label for="live-${i}">Live Production URL</label>
         <input id="live-${i}" type="url" placeholder="https://your-project.vercel.app" required />
       </div>
     `).join("");
@@ -301,68 +289,50 @@ const EMAILJS_CERT_TEMPLATE_ID = "template_kblft3d";
       renderTasks(app.assignedTasks || []);
       showOnly(els.tasksCard);
     } else if (app.status === "submitted" && !app.paymentClaimed) {
-      // Links are in but payment hasn't gone through yet — send them
-      // straight back to checkout, no certificate until it's paid.
       setStepper(2);
       renderTasks(app.assignedTasks || []);
       showOnly(els.tasksCard);
-      els.submitLinksBtn.textContent = 'Complete payment';
+      els.submitLinksBtn.textContent = 'Proceed to Verification Fee';
       openPaymentCheckout();
     } else if (app.status === "submitted" && app.paymentClaimed) {
       await generateCertificate();
     } else if (app.status === "certified") {
       setStepper(3);
-      els.certIdText.textContent = app.certId || "";
+      els.certIdText.textContent = `Credential ID: ${app.certId}`;
       showOnly(els.certifiedCard);
     } else if (app.status === "waitlisted") {
       els.gateMsg.className = 'status-msg';
-      els.gateMsg.textContent = "You're on the waitlist for the next batch — no tasks assigned yet.";
+      els.gateMsg.textContent = "You are currently on the waitlist for the next cohort.";
       showOnly(els.gateCard);
     }
   }
 
   els.gateBtn.addEventListener('click', async () => {
-    if (!currentAppId) {
-      els.gateMsg.className = 'status-msg err';
-      els.gateMsg.textContent = 'This link is missing its application ID — use the link from your task email.';
-      return;
-    }
-    if (!firebaseReady) {
-      els.gateMsg.className = 'status-msg err';
-      els.gateMsg.textContent = 'Not connected yet — check Firebase config.';
-      return;
-    }
+    if (!currentAppId) { els.gateMsg.className = 'status-msg err'; els.gateMsg.textContent = 'Invalid access link. Please use the link provided in your email.'; return; }
+    if (!firebaseReady) return;
     const email = els.gateEmail.value.trim();
     if (!email) return;
 
-    els.gateBtn.disabled = true;
-    els.gateBtn.textContent = 'Checking…';
-    els.gateMsg.textContent = '';
+    els.gateBtn.disabled = true; els.gateBtn.textContent = 'Authenticating...'; els.gateMsg.textContent = '';
 
     try{
       const snap = await fs.getDoc(fs.doc(db, "applications", currentAppId));
-      if (!snap.exists()) throw new Error("No application found for this link.");
+      if (!snap.exists()) throw new Error("Application record not found.");
       const app = snap.data();
-      if (app.email.toLowerCase() !== email.toLowerCase()) {
-        throw new Error("That email doesn't match this application.");
-      }
-      els.pageSub.textContent = `Hey ${app.name}, here's where things stand.`;
+      if (app.email.toLowerCase() !== email.toLowerCase()) throw new Error("Authentication failed. Email mismatch.");
+      
+      els.pageSub.textContent = `Welcome back, ${app.name}. View your engineering track status below.`;
 
-      // Already certified? Regenerate the PDF right away so the download
-      // button works without redoing anything.
       if (app.status === "certified") {
-        const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+        const dateStr = new Date().toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
         const pdfBytes = await buildCertificatePdf({ name: app.name, track: app.track, certId: app.certId, dateStr });
-        els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${app.certId}.pdf`);
+        els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${app.name.replace(/\s+/g, '_')}_Certificate.pdf`);
       }
-
       await renderByStatus(app);
     }catch(err){
-      els.gateMsg.className = 'status-msg err';
-      els.gateMsg.textContent = err.message || 'Something went wrong.';
+      els.gateMsg.className = 'status-msg err'; els.gateMsg.textContent = err.message || 'System error occurred.';
     }finally{
-      els.gateBtn.disabled = false;
-      els.gateBtn.textContent = 'View my tasks';
+      els.gateBtn.disabled = false; els.gateBtn.textContent = 'Authenticate Access';
     }
   });
 
@@ -374,14 +344,10 @@ const EMAILJS_CERT_TEMPLATE_ID = "template_kblft3d";
     }));
 
     if (links.some(l => !l.githubUrl || !l.liveUrl)) {
-      els.tasksMsg.className = 'status-msg err';
-      els.tasksMsg.textContent = 'Fill in both links for every task.';
-      return;
+      els.tasksMsg.className = 'status-msg err'; els.tasksMsg.textContent = 'All repository and production links are required.'; return;
     }
 
-    els.submitLinksBtn.disabled = true;
-    els.submitLinksBtn.textContent = 'Submitting…';
-    els.tasksMsg.textContent = '';
+    els.submitLinksBtn.disabled = true; els.submitLinksBtn.textContent = 'Encrypting & Submitting...'; els.tasksMsg.textContent = '';
 
     try{
       const now = Date.now();
@@ -389,147 +355,142 @@ const EMAILJS_CERT_TEMPLATE_ID = "template_kblft3d";
       const isLate = deadlineMs ? now > deadlineMs : false;
 
       await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
-        submissionLinks: links,
-        status: "submitted",
-        submittedAt: fs.serverTimestamp(),
-        submittedLate: isLate,
+        submissionLinks: links, status: "submitted", submittedAt: fs.serverTimestamp(), submittedLate: isLate,
       });
-      currentApp.status = "submitted";
-      currentApp.paymentClaimed = false;
-      setStepper(2);
-      openPaymentCheckout();
+      currentApp.status = "submitted"; currentApp.paymentClaimed = false;
+      setStepper(2); openPaymentCheckout();
     }catch(err){
-      els.tasksMsg.className = 'status-msg err';
-      els.tasksMsg.textContent = err.message || 'Something went wrong.';
-      els.submitLinksBtn.disabled = false;
-      els.submitLinksBtn.textContent = 'Submit all links';
+      els.tasksMsg.className = 'status-msg err'; els.tasksMsg.textContent = 'Database sync failed. Please retry.';
+      els.submitLinksBtn.disabled = false; els.submitLinksBtn.textContent = 'Submit Projects for Review';
     }
   });
 
   function openPaymentCheckout(){
-    els.submitLinksBtn.textContent = 'Opening payment…';
-
-    // NOTE: no server-created order here (that needs your secret key on a
-    // backend). This is Razorpay's simpler amount-based Checkout — it
-    // works, but the resulting payment_id is NOT cryptographically verified.
+    els.submitLinksBtn.textContent = 'Initializing Secure Checkout...';
     const rzp = new Razorpay({
-      key: RAZORPAY_KEY_ID,
-      amount: CERTIFICATION_FEE_PAISE,
-      currency: "INR",
-      name: "ShipTasks",
-      description: "Internship certificate verification",
-      prefill: { email: currentApp.email, name: currentApp.name },
-      theme: { color: "#8B7CFF" },
+      key: RAZORPAY_KEY_ID, amount: CERTIFICATION_FEE_PAISE, currency: "INR",
+      name: "ShipTasks Verification", description: "Official Credential Minting Fee",
+      prefill: { email: currentApp.email, name: currentApp.name }, theme: { color: "#8B7CFF" },
       handler: async function(response){
         try{
           await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
-            paymentClaimed: true,
-            paymentId: response.razorpay_payment_id,
-            paidAt: fs.serverTimestamp(),
+            paymentClaimed: true, paymentId: response.razorpay_payment_id, paidAt: fs.serverTimestamp(),
           });
-          currentApp.paymentClaimed = true;
-          await generateCertificate();
+          currentApp.paymentClaimed = true; await generateCertificate();
         }catch(err){
-          els.tasksMsg.className = 'status-msg err';
-          els.tasksMsg.textContent = err.message || 'Could not confirm payment — please try again.';
-          els.submitLinksBtn.disabled = false;
-          els.submitLinksBtn.textContent = 'Submit all links';
+          els.tasksMsg.className = 'status-msg err'; els.tasksMsg.textContent = 'Payment verified, but sync failed. Contact support.';
+          els.submitLinksBtn.disabled = false; els.submitLinksBtn.textContent = 'Submit Projects for Review';
         }
       },
-      modal: {
-        ondismiss: function(){
-          // No payment, no certificate — back to the task form.
-          els.submitLinksBtn.disabled = false;
-          els.submitLinksBtn.textContent = 'Submit all links';
-          setStepper(1);
-        }
-      }
+      modal: { ondismiss: function(){ els.submitLinksBtn.disabled = false; els.submitLinksBtn.textContent = 'Proceed to Verification Fee'; setStepper(1); } }
     });
     rzp.open();
   }
 
+  // --- PREMIUM CERTIFICATE PDF GENERATOR ---
   async function buildCertificatePdf({ name, track, certId, dateStr }) {
     const { PDFDocument, rgb, StandardFonts } = PDFLib;
     const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([842, 595]);
+    const page = pdfDoc.addPage([842, 595]); // A4 Landscape
     const { width, height } = page.getSize();
 
     const serifBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
     const serif = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-    const mono = await pdfDoc.embedFont(StandardFonts.Courier);
+    const serifItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
+    const sans = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const sansBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    const ink = rgb(0.06, 0.08, 0.11), indigo = rgb(0.545, 0.486, 1), muted = rgb(0.357, 0.4, 0.447);
+    const dark = rgb(0.11, 0.11, 0.16);
+    const primary = rgb(0.35, 0.31, 0.88);
+    const gold = rgb(0.68, 0.54, 0.18);
+    const grey = rgb(0.42, 0.42, 0.48);
+    const cream = rgb(0.99, 0.98, 0.95);
+    const sealTint = rgb(0.93, 0.92, 0.99);
 
-    page.drawRectangle({ x: 24, y: 24, width: width - 48, height: height - 48, borderColor: indigo, borderWidth: 2 });
-    page.drawRectangle({ x: 34, y: 34, width: width - 68, height: height - 68, borderColor: muted, borderWidth: 0.5 });
-
-    const centerText = (text, font, size, y, color = ink) => {
+    const centerText = (text, font, size, y, color = dark) => {
       const textWidth = font.widthOfTextAtSize(text, size);
       page.drawText(text, { x: (width - textWidth) / 2, y, size, font, color });
     };
+    const spaced = (text) => text.split("").join(String.fromCharCode(8202).repeat(3));
 
-    const trackLabel = track === "frontend" ? "Frontend" : "Backend";
-    centerText("CERTIFICATE OF COMPLETION", mono, 13, height - 110, indigo);
-    centerText("This is to certify that", serif, 14, height - 165, muted);
-    centerText(name, serifBold, 32, height - 210, ink);
-    centerText(`has successfully completed the ${trackLabel} Developer Internship,`, serif, 13, height - 250, ink);
-    centerText("shipping real, verifiable projects to a public GitHub repository.", serif, 13, height - 270, ink);
-    centerText(`Issued ${dateStr}`, serif, 11, 110, muted);
-    centerText(`Certificate ID: ${certId}`, mono, 10, 92, muted);
+    page.drawRectangle({ x: 0, y: 0, width, height, color: cream });
+
+    page.drawRectangle({ x: 22, y: 22, width: width - 44, height: height - 44, borderColor: primary, borderWidth: 2.5 });
+    page.drawRectangle({ x: 32, y: 32, width: width - 64, height: height - 64, borderColor: gold, borderWidth: 1 });
+
+    const cornerPts = [[46, 46], [width - 46, 46], [46, height - 46], [width - 46, height - 46]];
+    cornerPts.forEach(([cx, cy]) => {
+      page.drawCircle({ x: cx, y: cy, size: 5, color: gold });
+      page.drawCircle({ x: cx, y: cy, size: 2.2, color: cream });
+    });
+
+    page.drawRectangle({ x: width / 2 - 11, y: height - 88, width: 22, height: 22, color: primary });
+    const stW = sansBold.widthOfTextAtSize("ST", 11);
+    page.drawText("ST", { x: width / 2 - stW / 2, y: height - 81, size: 11, font: sansBold, color: cream });
+    centerText(spaced("SHIPTASKS"), sans, 12, height - 108, primary);
+
+    centerText(spaced("CERTIFICATE OF COMPLETION"), serifBold, 25, height - 148, dark);
+    page.drawLine({ start: { x: width / 2 - 70, y: height - 162 }, end: { x: width / 2 + 70, y: height - 162 }, thickness: 1, color: gold });
+
+    centerText("This is to certify that", serifItalic, 15, height - 196, grey);
+    centerText(name.toUpperCase(), serifBold, 34, height - 240, dark);
+    const nameW = serifBold.widthOfTextAtSize(name.toUpperCase(), 34);
+    const underlineW = Math.min(Math.max(nameW * 0.55, 140), 260);
+    page.drawLine({ start: { x: width / 2 - underlineW / 2, y: height - 252 }, end: { x: width / 2 + underlineW / 2, y: height - 252 }, thickness: 1, color: gold });
+
+    const trackLabel = track === "frontend" ? "Frontend Engineering" : "Backend Engineering";
+    centerText(`has successfully completed the ${trackLabel} Internship,`, serif, 13.5, height - 282, dark);
+    centerText("shipping production-ready, verifiable projects to a public GitHub repository", serif, 13.5, height - 304, dark);
+    centerText("under real deadlines and real engineering standards.", serif, 13.5, height - 326, dark);
+
+    page.drawLine({ start: { x: 100, y: 118 }, end: { x: 280, y: 118 }, thickness: 1, color: grey });
+    page.drawText("Program Director", { x: 138, y: 100, size: 11.5, font: serifBold, color: dark });
+    page.drawText("ShipTasks Engineering", { x: 128, y: 85, size: 9.5, font: sans, color: grey });
+
+    centerText(`Credential ID: ${certId}`, sans, 10.5, 118, dark);
+    centerText(`Date Issued: ${dateStr}`, sans, 10.5, 102, grey);
+    centerText("Verify at shiptasks.com/verify", sans, 10, 86, primary);
+
+    const sealX = width - 130, sealY = 118, sealR = 34;
+    page.drawCircle({ x: sealX, y: sealY, size: sealR, borderColor: gold, borderWidth: 1.5, color: sealTint });
+    page.drawCircle({ x: sealX, y: sealY, size: sealR - 6, borderColor: gold, borderWidth: 0.75 });
+    const starPath = "M0,-9 L2.12,-2.91 L8.55,-2.78 L3.42,1.11 L5.29,7.28 L0,3.6 L-5.29,7.28 L-3.42,1.11 L-8.55,-2.78 L-2.12,-2.91 Z";
+    page.drawSvgPath(starPath, { x: sealX, y: sealY + 4, scale: 1.4, color: gold });
+    const sealLabelW = sans.widthOfTextAtSize("VERIFIED", 7.5);
+    page.drawText("VERIFIED", { x: sealX - sealLabelW / 2, y: sealY - sealR - 12, size: 7.5, font: sansBold, color: gold });
 
     return pdfDoc.save();
   }
 
   async function generateCertificate(){
-    setStepper(2);
-    showOnly(els.generatingCard);
+    setStepper(2); showOnly(els.generatingCard);
 
-    const certId = currentApp.certId || `CERT-${currentAppId.slice(0, 8).toUpperCase()}`;
-    const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+    const certId = currentApp.certId || `CRD-${currentAppId.slice(0, 8).toUpperCase()}`;
+    const dateStr = new Date().toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" });
 
     const pdfBytes = await buildCertificatePdf({ name: currentApp.name, track: currentApp.track, certId, dateStr });
 
     if (currentApp.status !== "certified") {
-      await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
-        status: "certified",
-        certId,
-        certifiedAt: fs.serverTimestamp(),
-      });
+      await fs.updateDoc(fs.doc(db, "applications", currentAppId), { status: "certified", certId, certifiedAt: fs.serverTimestamp(), });
       sendCertificateEmail(certId);
     }
-    currentApp.status = "certified";
-    currentApp.certId = certId;
+    currentApp.status = "certified"; currentApp.certId = certId;
 
-    els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${certId}.pdf`);
-
-    setStepper(3);
-    els.certIdText.textContent = certId;
-    showOnly(els.certifiedCard);
+    els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${currentApp.name.replace(/\s+/g, '_')}_Certificate.pdf`);
+    setStepper(3); els.certIdText.textContent = `Credential ID: ${certId}`; showOnly(els.certifiedCard);
   }
 
   function downloadPdf(bytes, filename){
     const blob = new Blob([bytes], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click(); a.remove();
-    URL.revokeObjectURL(url);
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
   }
 
   function sendCertificateEmail(certId){
     if (EMAILJS_PUBLIC_KEY === "YOUR_EMAILJS_PUBLIC_KEY" || !window.emailjs) return;
     window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CERT_TEMPLATE_ID, {
-      to_email: currentApp.email,
-      to_name: currentApp.name,
-      cert_id: certId,
-      track: currentApp.track,
-      deadline: "",
-      tasks_text: `Your certificate (${certId}) is ready — download it from the submission portal.`,
-      submit_link: window.location.href,
-    }).then(() => {
-      console.log("Certificate email sent successfully.");
-    }).catch((err) => {
-      console.error("Certificate email failed (download still works):", err);
+      to_email: currentApp.email, to_name: currentApp.name, cert_id: certId, track: currentApp.track, deadline: "",
+      tasks_text: `Your official credential (${certId}) is ready. Download it from the portal.`, submit_link: window.location.href,
     });
   }
 </script>
