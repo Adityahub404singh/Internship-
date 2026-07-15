@@ -5,7 +5,7 @@ platform — no billing account, no card, no Cloud Functions, no Cloud
 Storage. Built entirely on Firebase's free **Spark plan**, using only
 **Firestore** and **Hosting**.
 
----
+--
 
 ## How it works, end to end
 
