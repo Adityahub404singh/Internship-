@@ -4,7 +4,7 @@ A 100% free-tier internship application, task-submission, and certification
 platform — no billing account, no card, no Cloud Functions, no Cloud
 Storage. Built entirely on Firebase's free **Spark plan**, using only
 **Firestore** and **Hosting**.
-
+🔗 **Live:** [internship-764c3.web.app](https://internship-764c3.web.app)
 --
 
 ## How it works, end to end
