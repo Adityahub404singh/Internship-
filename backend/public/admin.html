@@ -15,6 +15,7 @@
         --violet: #8B5CF6;
         --emerald: #10B981;
         --amber: #F59E0B;
+        --red: #EF4444;
         --mono: 'JetBrains Mono', monospace;
         --display: 'Space Grotesk', sans-serif;
         --body: 'Inter', sans-serif;
@@ -53,22 +54,65 @@
     #gate button:hover { background: #7c3aed; }
     .err { color: #EF4444; font-size: 13px; margin-top: 12px; font-family: var(--mono); }
 
+    /* Filter bar */
+    .filter-bar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 18px;
+    }
+    .filter-bar label {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .filter-bar select {
+        background: rgba(0,0,0,0.4);
+        color: #fff;
+        border: 1px solid var(--border);
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-family: var(--mono);
+        font-size: 13px;
+        cursor: pointer;
+    }
+    .filter-bar select:focus { outline: none; border-color: var(--violet); }
+    .filter-count { font-family: var(--mono); font-size: 12.5px; color: var(--muted); margin-left: auto; }
+
     /* Dashboard UI */
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
-    .card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px; }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
     .student-info .name { font-family: var(--display); font-weight: 700; font-size: 20px; display: flex; align-items: center; gap: 10px; }
     .student-info .meta { color: var(--muted); font-size: 13px; font-family: var(--mono); margin-top: 4px; }
     
-    .status-badge { font-family: var(--mono); font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
+
+    .status-badge { font-family: var(--mono); font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
     .status-submitted { background: rgba(245, 158, 11, 0.1); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.2); }
     .status-certified { background: rgba(16, 185, 129, 0.1); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2); }
+
+    .review-badge { font-family: var(--mono); font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+    .review-pending { background: rgba(161, 161, 170, 0.1); color: var(--muted); border: 1px solid rgba(161, 161, 170, 0.25); }
+    .review-approved { background: rgba(16, 185, 129, 0.1); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .review-rejected { background: rgba(239, 68, 68, 0.1); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.2); }
+    .review-resubmission { background: rgba(245, 158, 11, 0.1); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.25); }
+    .review-incomplete { background: rgba(239, 68, 68, 0.08); color: var(--red); border: 1px dashed rgba(239, 68, 68, 0.3); }
 
     .track-tag { display: inline-block; background: rgba(139, 92, 246, 0.1); color: var(--violet); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 600; margin-top: 12px; font-family: var(--mono); }
 
     .links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 20px; }
     .task-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .task-box.incomplete-box { border-color: rgba(239, 68, 68, 0.35); }
     .task-box .t-id { font-family: var(--mono); font-size: 11px; color: var(--violet); margin-bottom: 4px; }
     .task-box .t-title { font-weight: 600; font-size: 15px; margin-bottom: 16px; }
+    .task-box .t-missing { font-family: var(--mono); font-size: 12px; color: var(--red); margin-bottom: 12px; }
     
     .btn-group { display: flex; gap: 8px; }
     .btn-link { flex: 1; text-align: center; font-family: var(--mono); font-size: 12px; text-decoration: none; padding: 8px; border-radius: 6px; font-weight: 600; transition: 0.2s; }
@@ -76,6 +120,35 @@
     .btn-github:hover { background: #2f363d; }
     .btn-live { background: rgba(16, 185, 129, 0.1); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
     .btn-live:hover { background: rgba(16, 185, 129, 0.2); }
+
+    /* Admin review actions */
+    .review-note-box {
+        margin-top: 14px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        font-size: 13px;
+        color: var(--muted);
+        font-style: italic;
+    }
+    .review-note-box strong { color: var(--text); font-style: normal; }
+
+    .admin-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; border-top: 1px dashed var(--border); padding-top: 18px; }
+    .abtn {
+        font-family: var(--mono); font-size: 12.5px; font-weight: 600;
+        padding: 10px 18px; border-radius: 8px; border: 1px solid;
+        cursor: pointer; transition: 0.2s; background: transparent;
+    }
+    .abtn-approve { color: var(--emerald); border-color: rgba(16,185,129,0.4); }
+    .abtn-approve:hover { background: rgba(16,185,129,0.12); }
+    .abtn-reject { color: var(--red); border-color: rgba(239,68,68,0.4); }
+    .abtn-reject:hover { background: rgba(239,68,68,0.12); }
+    .abtn-retry { color: var(--amber); border-color: rgba(245,158,11,0.4); }
+    .abtn-retry:hover { background: rgba(245,158,11,0.12); }
+    .abtn-reset { color: var(--muted); border-color: var(--border); }
+    .abtn-reset:hover { background: rgba(255,255,255,0.06); }
+    .abtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .empty { text-align: center; padding: 60px; color: var(--muted); font-family: var(--mono); font-size: 14px; border: 1px dashed var(--border); border-radius: 12px; }
 </style>
@@ -93,7 +166,22 @@
 
 <div class="wrap" id="panel" style="display:none;">
     <h1>Submission Matrix</h1>
-    <div class="sub">Live feed of all developer code submissions. Ready for review.</div>
+    <div class="sub">Live feed of all developer code submissions. Review, approve, reject, or request a resubmission.</div>
+
+    <div class="filter-bar">
+        <label for="filterSelect">Filter</label>
+        <select id="filterSelect">
+            <option value="all">All submissions</option>
+            <option value="pending">Pending review</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="resubmission">Resubmission requested</option>
+            <option value="incomplete">Incomplete links</option>
+            <option value="certified">Certified &amp; paid</option>
+        </select>
+        <span class="filter-count" id="filterCount"></span>
+    </div>
+
     <div id="list"></div>
 </div>
 
@@ -136,6 +224,8 @@
     };
 
     let db, fs;
+    let allRows = [];
+    let currentFilter = 'all';
 
     async function initFirebase() {
         const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
@@ -162,8 +252,16 @@
                 return timeB - timeA;
             });
             
-            render(rows);
+            allRows = rows;
+            render();
         });
+
+        document.getElementById('filterSelect').addEventListener('change', (e) => {
+            currentFilter = e.target.value;
+            render();
+        });
+
+        document.getElementById('list').addEventListener('click', handleActionClick);
     }
 
     function escapeHtml(s) {
@@ -175,18 +273,55 @@
         return ts.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
     }
 
-    function render(rows) {
+    // A submission counts as "incomplete" if any task is missing a github or live URL.
+    // This mostly catches legacy/edge-case data, since submit.html already validates both fields.
+    function isIncomplete(r) {
+        if (!r.submissionLinks || r.submissionLinks.length === 0) return true;
+        return r.submissionLinks.some(l => !l.githubUrl || !l.liveUrl);
+    }
+
+    function getReviewStatus(r) {
+        return r.reviewStatus || 'pending';
+    }
+
+    function matchesFilter(r) {
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'certified') return r.status === 'certified';
+        if (currentFilter === 'incomplete') return isIncomplete(r);
+        return getReviewStatus(r) === currentFilter;
+    }
+
+    function render() {
         const list = document.getElementById('list');
-        if(rows.length === 0) {
-            list.innerHTML = '<div class="empty">[root@shipyard]~$ Waiting for code matrices to be pushed...</div>';
+        const filtered = allRows.filter(matchesFilter);
+
+        document.getElementById('filterCount').textContent =
+            `${filtered.length} of ${allRows.length} shown`;
+
+        if(filtered.length === 0) {
+            list.innerHTML = '<div class="empty">[root@shipyard]~$ No submissions match this filter...</div>';
             return;
         }
-        list.innerHTML = rows.map(cardHtml).join('');
+        list.innerHTML = filtered.map(cardHtml).join('');
+    }
+
+    function reviewBadgeHtml(r) {
+        const rs = getReviewStatus(r);
+        const map = {
+            pending: { cls: 'review-pending', text: '● Pending review' },
+            approved: { cls: 'review-approved', text: '✓ Approved' },
+            rejected: { cls: 'review-rejected', text: '✕ Rejected' },
+            resubmission_requested: { cls: 'review-resubmission', text: '↺ Resubmission requested' },
+        };
+        const cfg = map[rs] || map.pending;
+        return `<span class="review-badge ${cfg.cls}">${cfg.text}</span>`;
     }
 
     function cardHtml(r) {
         const statusClass = r.status === 'certified' ? 'status-certified' : 'status-submitted';
         const statusText = r.status === 'certified' ? '✓ Verified & Paid' : '⏳ Submitted (Pending Payment)';
+        const incomplete = isIncomplete(r);
+        const rs = getReviewStatus(r);
         
         let linksHtml = '<div class="links-grid">';
         
@@ -197,14 +332,18 @@
                 const taskDef = (r.assignedTasks || []).find(t => t.id === linkObj.taskId) || {};
                 const tTitle = taskDef.title || 'Unknown Task';
                 const tId = taskDef.displayId || linkObj.taskId;
+                const missingGh = !linkObj.githubUrl;
+                const missingLive = !linkObj.liveUrl;
+                const boxClass = (missingGh || missingLive) ? 'task-box incomplete-box' : 'task-box';
                 
                 linksHtml += `
-                    <div class="task-box">
+                    <div class="${boxClass}">
                         <div class="t-id">${escapeHtml(tId)}</div>
                         <div class="t-title">${escapeHtml(tTitle)}</div>
+                        ${(missingGh || missingLive) ? `<div class="t-missing">⚠ Missing ${missingGh ? 'GitHub URL' : ''}${missingGh && missingLive ? ' & ' : ''}${missingLive ? 'Live URL' : ''}</div>` : ''}
                         <div class="btn-group">
-                            <a href="${escapeHtml(linkObj.githubUrl)}" target="_blank" class="btn-link btn-github">GitHub Repo</a>
-                            <a href="${escapeHtml(linkObj.liveUrl)}" target="_blank" class="btn-link btn-live">Live App</a>
+                            ${linkObj.githubUrl ? `<a href="${escapeHtml(linkObj.githubUrl)}" target="_blank" class="btn-link btn-github">GitHub Repo</a>` : `<span class="btn-link btn-github" style="opacity:0.4;">No GitHub link</span>`}
+                            ${linkObj.liveUrl ? `<a href="${escapeHtml(linkObj.liveUrl)}" target="_blank" class="btn-link btn-live">Live App</a>` : `<span class="btn-link btn-live" style="opacity:0.4;">No live link</span>`}
                         </div>
                     </div>
                 `;
@@ -214,22 +353,115 @@
         }
         linksHtml += '</div>';
 
+        const noteHtml = r.reviewNote
+            ? `<div class="review-note-box"><strong>Admin note:</strong> ${escapeHtml(r.reviewNote)}</div>`
+            : '';
+
+        // Action buttons change slightly depending on current review status
+        let actionsHtml = '<div class="admin-actions">';
+        if (rs === 'pending') {
+            actionsHtml += `
+                <button class="abtn abtn-approve" data-action="approve" data-id="${r.id}">✓ Approve</button>
+                <button class="abtn abtn-reject" data-action="reject" data-id="${r.id}">✕ Reject</button>
+                <button class="abtn abtn-retry" data-action="resubmit" data-id="${r.id}">↺ Request Resubmission</button>
+            `;
+        } else {
+            actionsHtml += `
+                <button class="abtn abtn-reset" data-action="reset" data-id="${r.id}">↩ Reset to pending</button>
+                ${rs !== 'resubmission_requested' ? `<button class="abtn abtn-retry" data-action="resubmit" data-id="${r.id}">↺ Request Resubmission</button>` : ''}
+            `;
+        }
+        actionsHtml += '</div>';
+
         return `
-            <div class="card">
+            <div class="card" data-card-id="${r.id}">
                 <div class="card-header">
                     <div class="student-info">
                         <div class="name">${escapeHtml(r.name || 'Unknown')}</div>
                         <div class="meta">${escapeHtml(r.email || '')} &nbsp;|&nbsp; ${escapeHtml(r.phone || '')} &nbsp;|&nbsp; Submitted: ${formatDate(r.submittedAt)}</div>
                         <div class="track-tag">${escapeHtml(r.track || 'Track')} Developer</div>
                     </div>
-                    <div class="status-badge ${statusClass}">${statusText}</div>
+                    <div class="badge-group">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        ${reviewBadgeHtml(r)}
+                        ${incomplete ? '<span class="review-badge review-incomplete">⚠ Incomplete</span>' : ''}
+                    </div>
                 </div>
                 <div>
                     <h3 style="font-size: 14px; color: var(--muted); margin: 0; font-weight: 500;">Submitted Repositories:</h3>
                     ${linksHtml}
                 </div>
+                ${noteHtml}
+                ${actionsHtml}
             </div>
         `;
+    }
+
+    async function handleActionClick(e) {
+        const btn = e.target.closest('button[data-action]');
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        const action = btn.dataset.action;
+        const row = allRows.find(r => r.id === id);
+        if (!row) return;
+
+        const cardButtons = e.currentTarget.querySelectorAll(`[data-id="${id}"]`);
+        cardButtons.forEach(b => b.disabled = true);
+
+        try {
+            if (action === 'approve') {
+                await fs.updateDoc(fs.doc(db, "applications", id), {
+                    reviewStatus: 'approved',
+                    reviewNote: '',
+                    reviewedAt: fs.serverTimestamp(),
+                });
+
+            } else if (action === 'reject') {
+                const reason = window.prompt('Reason for rejection (shown only to admins, optional):', '');
+                if (reason === null) { // user hit Cancel
+                    cardButtons.forEach(b => b.disabled = false);
+                    return;
+                }
+                await fs.updateDoc(fs.doc(db, "applications", id), {
+                    reviewStatus: 'rejected',
+                    reviewNote: reason || '',
+                    reviewedAt: fs.serverTimestamp(),
+                });
+
+            } else if (action === 'resubmit') {
+                const reason = window.prompt('What should the student fix before resubmitting? (this note is stored for your own tracking)', '');
+                if (reason === null) {
+                    cardButtons.forEach(b => b.disabled = false);
+                    return;
+                }
+                // Reset status to "assigned" so submit.html shows the task form again,
+                // and clear the previous links so the student re-enters fresh URLs.
+                await fs.updateDoc(fs.doc(db, "applications", id), {
+                    status: 'assigned',
+                    reviewStatus: 'resubmission_requested',
+                    reviewNote: reason || '',
+                    reviewedAt: fs.serverTimestamp(),
+                    submissionLinks: fs.deleteField(),
+                    submittedAt: fs.deleteField(),
+                    submittedLate: fs.deleteField(),
+                    paymentClaimed: false,
+                });
+
+            } else if (action === 'reset') {
+                await fs.updateDoc(fs.doc(db, "applications", id), {
+                    reviewStatus: fs.deleteField(),
+                    reviewNote: '',
+                    reviewedAt: fs.serverTimestamp(),
+                });
+            }
+        } catch (err) {
+            console.error('Admin action failed:', err);
+            alert('Action failed: ' + (err.message || 'Unknown error. Please try again.'));
+            cardButtons.forEach(b => b.disabled = false);
+        }
+        // No need to manually re-render — onSnapshot will fire again with the update
+        // and re-render automatically once Firestore confirms the write.
     }
 </script>
 </body>
