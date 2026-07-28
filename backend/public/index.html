@@ -1057,7 +1057,7 @@
         <div class="section-inner reveal">
             <p class="kicker">Last step before the system takes over</p>
             <h2>Reserve your task slot</h2>
-            <p class="section-desc">This is the only step that requires effort from you before the system takes over. Submit this, and your 3–5 tasks land in inbox with the deadline attached — what you build after that is entirely yours to show off.</p>
+            <p class="section-desc">This is the only step that requires effort from you before the system takes over. Submit this, and your 3–5 tasks land in your inbox with the deadline attached — what you build after that is entirely yours to show off.</p>
             
             <p class="form-batch-note" id="form-batch-note"></p>
 
@@ -1167,65 +1167,84 @@
         let countdownInterval = null;
         let latestBatch = null;
 
-        // ======================================================================
-        // 🔥 ULTIMATE FALLBACK TASKS DATABASE (10 TRACKS)
-        // Agar Firebase se data na aaye, toh ye professional tasks assign honge
-        // ======================================================================
+        // 🔥 FULLY UPDATED 5 TASKS PER TRACK FALLBACK 🔥
         const fallbackTasks = {
             "frontend": [
                 { id: "fe_01", displayId: "SYS-FE-11A", title: "Responsive Landing Page", objective: "Convert a provided Figma design into a responsive landing page.", techRequirements: ["HTML", "CSS", "JS"], mustInclude: ["Mobile-first design", "CSS Grid/Flexbox", "Smooth scrolling"] },
                 { id: "fe_02", displayId: "SYS-FE-22B", title: "Interactive API Dashboard", objective: "Fetch and display data from a public REST API.", techRequirements: ["React or Vanilla JS"], mustInclude: ["Fetch/Axios calls", "Error handling", "Loading states"] },
-                { id: "fe_03", displayId: "SYS-FE-33C", title: "State Management App", objective: "Build a multi-step form or to-do app managing complex state.", techRequirements: ["React/Vue/Angular"], mustInclude: ["Component modularity", "State persistence"] }
+                { id: "fe_03", displayId: "SYS-FE-33C", title: "State Management App", objective: "Build a multi-step form or to-do app managing complex state.", techRequirements: ["React/Vue/Angular"], mustInclude: ["Component modularity", "State persistence"] },
+                { id: "fe_04", displayId: "SYS-FE-44D", title: "Accessible Component Library", objective: "Build a small reusable UI component library following accessibility best practices.", techRequirements: ["HTML", "CSS", "JS"], mustInclude: ["ARIA labels", "Keyboard navigation", "Storybook or demo page"] },
+                { id: "fe_05", displayId: "SYS-FE-55E", title: "Theming & Dark Mode Toggle", objective: "Implement a light/dark theme switcher across a multi-page site.", techRequirements: ["CSS Variables", "JS"], mustInclude: ["Persisted theme preference", "Smooth transition", "System preference detection"] }
             ],
             "backend": [
                 { id: "be_01", displayId: "SYS-BE-14X", title: "RESTful Authentication API", objective: "Build a secure user authentication system.", techRequirements: ["Node.js/Python", "JWT"], mustInclude: ["Signup/Login routes", "Password hashing", "Token validation"] },
                 { id: "be_02", displayId: "SYS-BE-29Y", title: "Database Schema & Migration", objective: "Design and implement a relational database schema for an e-commerce backend.", techRequirements: ["PostgreSQL", "Prisma/Sequelize"], mustInclude: ["One-to-many relations", "Migration scripts"] },
-                { id: "be_03", displayId: "SYS-BE-55Z", title: "Background Job Processor", objective: "Implement a queue system to process background tasks (e.g. sending emails).", techRequirements: ["Redis", "Bull/Celery"], mustInclude: ["Task queuing", "Retry mechanism"] }
+                { id: "be_03", displayId: "SYS-BE-55Z", title: "Background Job Processor", objective: "Implement a queue system to process background tasks (e.g. sending emails).", techRequirements: ["Redis", "Bull/Celery"], mustInclude: ["Task queuing", "Retry mechanism"] },
+                { id: "be_04", displayId: "SYS-BE-71W", title: "Rate-Limited Public API", objective: "Build a public API endpoint with rate limiting and API key validation.", techRequirements: ["Node.js/Python", "Redis"], mustInclude: ["Rate limiting middleware", "API key auth", "Usage logging"] },
+                { id: "be_05", displayId: "SYS-BE-88V", title: "File Upload & Processing Service", objective: "Create an endpoint that accepts file uploads and processes them asynchronously.", techRequirements: ["Node.js/Python", "S3/Cloud Storage"], mustInclude: ["Multipart upload handling", "Async processing queue", "Status polling endpoint"] }
             ],
             "fullstack": [
                 { id: "fs_01", displayId: "SYS-FS-101", title: "E-Commerce Product Dashboard", objective: "Build a full-stack dashboard to manage product inventory.", techRequirements: ["React", "Node.js", "MongoDB"], mustInclude: ["CRUD operations", "REST API integration", "Responsive UI"] },
                 { id: "fs_02", displayId: "SYS-FS-202", title: "User Profile with Image Upload", objective: "Allow users to register, log in, and upload an avatar.", techRequirements: ["AWS S3/Cloudinary", "Express", "React"], mustInclude: ["Multipart form data handling", "Secure URLs"] },
-                { id: "fs_03", displayId: "SYS-FS-303", title: "Real-time Chat Module", objective: "Implement a basic real-time communication system.", techRequirements: ["Socket.io", "React"], mustInclude: ["Live event emitting", "Chat history display"] }
+                { id: "fs_03", displayId: "SYS-FS-303", title: "Real-time Chat Module", objective: "Implement a basic real-time communication system.", techRequirements: ["Socket.io", "React"], mustInclude: ["Live event emitting", "Chat history display"] },
+                { id: "fs_04", displayId: "SYS-FS-404", title: "Admin Analytics Panel", objective: "Build a full-stack admin panel showing key metrics from a database.", techRequirements: ["React", "Node.js", "PostgreSQL"], mustInclude: ["Chart visualizations", "Filterable date ranges", "Role-based access"] },
+                { id: "fs_05", displayId: "SYS-FS-505", title: "Multi-Tenant SaaS Starter", objective: "Implement a basic multi-tenant architecture for a SaaS application.", techRequirements: ["Next.js", "Prisma", "PostgreSQL"], mustInclude: ["Tenant isolation", "Subdomain routing", "Shared auth layer"] }
             ],
             "uiux": [
                 { id: "ux_01", displayId: "SYS-UX-77A", title: "Design System & Token Architecture", objective: "Create a scalable design system using Figma variables and auto-layout.", techRequirements: ["Figma"], mustInclude: ["Color tokens", "Typography scale", "Interactive components"] },
                 { id: "ux_02", displayId: "SYS-UX-92B", title: "User Flow Wireframing", objective: "Design a complete user journey wireframe for an e-commerce checkout.", techRequirements: ["Figma / FigJam"], mustInclude: ["Cart review", "Address input", "Payment gateway selection"] },
-                { id: "ux_03", displayId: "SYS-UX-14C", title: "High-Fidelity Dashboard", objective: "Design a dark-themed analytics dashboard interface.", techRequirements: ["Figma"], mustInclude: ["Data visualization charts", "Sidebar navigation", "Responsive layout grid"] }
+                { id: "ux_03", displayId: "SYS-UX-14C", title: "High-Fidelity Dashboard", objective: "Design a dark-themed analytics dashboard interface.", techRequirements: ["Figma"], mustInclude: ["Data visualization charts", "Sidebar navigation", "Responsive layout grid"] },
+                { id: "ux_04", displayId: "SYS-UX-38D", title: "Mobile App Onboarding Flow", objective: "Design a complete onboarding flow for a mobile app, from splash screen to first action.", techRequirements: ["Figma"], mustInclude: ["3-5 screen flow", "Micro-interaction notes", "Empty/error states"] },
+                { id: "ux_05", displayId: "SYS-UX-56E", title: "Accessibility Audit & Redesign", objective: "Audit an existing interface for accessibility issues and redesign key screens.", techRequirements: ["Figma"], mustInclude: ["Contrast ratio fixes", "Focus state design", "Annotated redesign notes"] }
             ],
             "appdev": [
                 { id: "mob_01", displayId: "SYS-MOB-01", title: "Cross-Platform Auth Flow", objective: "Build a login/signup flow for a mobile application.", techRequirements: ["React Native or Flutter"], mustInclude: ["Form validation", "State management", "Secure token storage"] },
                 { id: "mob_02", displayId: "SYS-MOB-02", title: "Infinite Scroll API List", objective: "Display a list of items fetching from an API with pagination.", techRequirements: ["React Native / Flutter"], mustInclude: ["FlatList/ListView", "Activity Indicator", "Pull-to-refresh"] },
-                { id: "mob_03", displayId: "SYS-MOB-03", title: "Offline Data Sync", objective: "Implement local storage to cache data when the user is offline.", techRequirements: ["AsyncStorage / SQLite"], mustInclude: ["Network status detection", "Local caching"] }
+                { id: "mob_03", displayId: "SYS-MOB-03", title: "Offline Data Sync", objective: "Implement local storage to cache data when the user is offline.", techRequirements: ["AsyncStorage / SQLite"], mustInclude: ["Network status detection", "Local caching"] },
+                { id: "mob_04", displayId: "SYS-MOB-04", title: "Push Notification Integration", objective: "Implement push notifications for a mobile app with deep linking.", techRequirements: ["Firebase Cloud Messaging"], mustInclude: ["Token registration", "Deep link handling", "Notification permission flow"] },
+                { id: "mob_05", displayId: "SYS-MOB-05", title: "In-App Camera & Media Picker", objective: "Build a feature allowing users to capture photos or pick media from their gallery.", techRequirements: ["React Native/Flutter"], mustInclude: ["Camera permission handling", "Image preview", "Upload to server"] }
             ],
             "datascience": [
                 { id: "ds_01", displayId: "SYS-DS-41", title: "Data Cleaning Pipeline", objective: "Clean and preprocess a messy CSV dataset.", techRequirements: ["Python", "Pandas"], mustInclude: ["Null value handling", "Outlier detection", "Data normalization"] },
                 { id: "ds_02", displayId: "SYS-DS-42", title: "Exploratory Data Analysis", objective: "Create a Jupyter notebook performing EDA on sales data.", techRequirements: ["Matplotlib", "Seaborn"], mustInclude: ["Correlation matrix", "Trend visualizations"] },
-                { id: "ds_03", displayId: "SYS-DS-43", title: "Basic Predictive Model", objective: "Train a simple machine learning model to predict outcomes.", techRequirements: ["Scikit-Learn"], mustInclude: ["Train/test split", "Accuracy metrics scoring"] }
+                { id: "ds_03", displayId: "SYS-DS-43", title: "Basic Predictive Model", objective: "Train a simple machine learning model to predict outcomes.", techRequirements: ["Scikit-Learn"], mustInclude: ["Train/test split", "Accuracy metrics scoring"] },
+                { id: "ds_04", displayId: "SYS-DS-44", title: "Time Series Forecasting", objective: "Build a forecasting model on a time series dataset (e.g. sales or traffic).", techRequirements: ["Python", "Statsmodels/Prophet"], mustInclude: ["Trend/seasonality decomposition", "Forecast accuracy metrics"] },
+                { id: "ds_05", displayId: "SYS-DS-45", title: "Clustering & Segmentation", objective: "Perform customer segmentation using clustering techniques on a dataset.", techRequirements: ["Scikit-Learn"], mustInclude: ["K-Means or hierarchical clustering", "Cluster visualization", "Segment profiling"] }
             ],
             "devops": [
                 { id: "do_01", displayId: "SYS-DO-81", title: "Dockerize Web Application", objective: "Write a complete Dockerfile and docker-compose to containerize a Node/React app.", techRequirements: ["Docker"], mustInclude: ["Multi-stage builds", "Environment variables"] },
                 { id: "do_02", displayId: "SYS-DO-82", title: "CI/CD Pipeline Setup", objective: "Create a GitHub Actions workflow to lint, test, and build code on push.", techRequirements: ["GitHub Actions"], mustInclude: ["Node setup", "Automated testing step"] },
-                { id: "do_03", displayId: "SYS-DO-83", title: "Infrastructure as Code", objective: "Write Terraform scripts to provision a basic cloud server (AWS EC2/DigitalOcean).", techRequirements: ["Terraform"], mustInclude: ["Provider config", "Resource block"] }
+                { id: "do_03", displayId: "SYS-DO-83", title: "Infrastructure as Code", objective: "Write Terraform scripts to provision a basic cloud server (AWS EC2/DigitalOcean).", techRequirements: ["Terraform"], mustInclude: ["Provider config", "Resource block"] },
+                { id: "do_04", displayId: "SYS-DO-84", title: "Kubernetes Deployment Manifests", objective: "Write Kubernetes manifests to deploy a containerized application.", techRequirements: ["Kubernetes", "Docker"], mustInclude: ["Deployment + Service YAML", "ConfigMap/Secrets usage", "Readiness/liveness probes"] },
+                { id: "do_05", displayId: "SYS-DO-85", title: "Monitoring & Alerting Setup", objective: "Set up basic monitoring and alerting for an application.", techRequirements: ["Prometheus/Grafana"], mustInclude: ["Metrics dashboard", "Alert rule configuration"] }
             ],
             "ai_ml": [
                 { id: "ai_01", displayId: "SYS-AI-01", title: "Custom NLP Classifier", objective: "Train a text classification model to detect sentiment.", techRequirements: ["PyTorch / TensorFlow"], mustInclude: ["Dataset tokenization", "Model evaluation"] },
                 { id: "ai_02", displayId: "SYS-AI-02", title: "Model Serving API", objective: "Deploy your trained model behind a RESTful API.", techRequirements: ["FastAPI", "Python"], mustInclude: ["POST endpoint for prediction", "Input validation"] },
-                { id: "ai_03", displayId: "SYS-AI-03", title: "RAG Setup (Retrieval-Augmented Generation)", objective: "Create a basic vector search integration for a language model.", techRequirements: ["LangChain", "Pinecone/Chroma"], mustInclude: ["Document chunking", "Embedding generation"] }
+                { id: "ai_03", displayId: "SYS-AI-03", title: "RAG Setup (Retrieval-Augmented Generation)", objective: "Create a basic vector search integration for a language model.", techRequirements: ["LangChain", "Pinecone/Chroma"], mustInclude: ["Document chunking", "Embedding generation"] },
+                { id: "ai_04", displayId: "SYS-AI-04", title: "Image Classification Model", objective: "Train a CNN-based image classifier on a labeled dataset.", techRequirements: ["TensorFlow/PyTorch"], mustInclude: ["Data augmentation", "Confusion matrix evaluation"] },
+                { id: "ai_05", displayId: "SYS-AI-05", title: "Prompt Engineering Pipeline", objective: "Build a pipeline that evaluates and compares different prompts against an LLM for a specific task.", techRequirements: ["Python", "OpenAI/Anthropic API"], mustInclude: ["Prompt variant testing", "Scoring/evaluation logic"] }
             ],
             "cybersecurity": [
                 { id: "sec_01", displayId: "SYS-SEC-11", title: "Vulnerability Scanning Script", objective: "Write a script to automate basic port scanning and service detection.", techRequirements: ["Python", "Nmap"], mustInclude: ["Target input parsing", "Report output formatting"] },
                 { id: "sec_02", displayId: "SYS-SEC-12", title: "Web App Auth Patching", objective: "Identify and patch a SQL injection or XSS vulnerability in provided code.", techRequirements: ["Node/Python"], mustInclude: ["Parameterized queries implementation"] },
-                { id: "sec_03", displayId: "SYS-SEC-13", title: "Security Audit Report", objective: "Conduct a basic audit on a sample network configuration and write a findings report.", techRequirements: ["Documentation"], mustInclude: ["Risk scoring", "Remediation steps"] }
+                { id: "sec_03", displayId: "SYS-SEC-13", title: "Security Audit Report", objective: "Conduct a basic audit on a sample network configuration and write a findings report.", techRequirements: ["Documentation"], mustInclude: ["Risk scoring", "Remediation steps"] },
+                { id: "sec_04", displayId: "SYS-SEC-14", title: "Password Policy Enforcement Tool", objective: "Build a tool that checks password strength and enforces security policies.", techRequirements: ["Python/Node.js"], mustInclude: ["Entropy scoring", "Common password blacklist check"] },
+                { id: "sec_05", displayId: "SYS-SEC-15", title: "Log Analysis for Intrusion Detection", objective: "Write a script to analyze server logs and flag suspicious activity patterns.", techRequirements: ["Python"], mustInclude: ["Pattern matching rules", "Report generation"] }
             ],
             "web3": [
                 { id: "w3_01", displayId: "SYS-W3-01", title: "ERC-20 Token Contract", objective: "Write and compile a basic ERC-20 smart contract.", techRequirements: ["Solidity", "Hardhat/Foundry"], mustInclude: ["Minting function", "SafeMath/Overflow protection"] },
                 { id: "w3_02", displayId: "SYS-W3-02", title: "Smart Contract Testing", objective: "Write unit tests for your smart contract using Chai/Mocha.", techRequirements: ["JavaScript/TypeScript"], mustInclude: ["Transfer test cases", "Failure scenario testing"] },
-                { id: "w3_03", displayId: "SYS-W3-03", title: "Frontend DApp Integration", objective: "Connect a simple React frontend to read from your smart contract.", techRequirements: ["Ethers.js / Web3.js"], mustInclude: ["Wallet connection (MetaMask)", "Read contract state"] }
+                { id: "w3_03", displayId: "SYS-W3-03", title: "Frontend DApp Integration", objective: "Connect a simple React frontend to read from your smart contract.", techRequirements: ["Ethers.js / Web3.js"], mustInclude: ["Wallet connection (MetaMask)", "Read contract state"] },
+                { id: "w3_04", displayId: "SYS-W3-04", title: "NFT Minting Contract", objective: "Write and deploy an ERC-721 NFT minting smart contract.", techRequirements: ["Solidity", "Hardhat"], mustInclude: ["Metadata URI handling", "Mint function with supply cap"] },
+                { id: "w3_05", displayId: "SYS-W3-05", title: "DAO Voting Contract", objective: "Implement a basic DAO voting smart contract.", techRequirements: ["Solidity"], mustInclude: ["Proposal creation", "Vote tallying logic"] }
             ],
             "default": [
                 { id: "gen_01", displayId: "SYS-GEN-101", title: "Core Track Implementation", objective: "Build the foundational architecture for your track's primary requirement.", techRequirements: ["Core Track Tech"], mustInclude: ["Clean code", "Proper documentation"] },
                 { id: "gen_02", displayId: "SYS-GEN-102", title: "Data Flow & Optimization", objective: "Implement and optimize data handling processes.", techRequirements: ["Core Track Tech"], mustInclude: ["Error handling", "Performance considerations"] },
-                { id: "gen_03", displayId: "SYS-GEN-103", title: "Final Integration Project", objective: "Combine previous modules into a working deployable project.", techRequirements: ["Core Track Tech"], mustInclude: ["Live deployment", "GitHub repository"] }
+                { id: "gen_03", displayId: "SYS-GEN-103", title: "Final Integration Project", objective: "Combine previous modules into a working deployable project.", techRequirements: ["Core Track Tech"], mustInclude: ["Live deployment", "GitHub repository"] },
+                { id: "gen_04", displayId: "SYS-GEN-104", title: "Testing & Quality Assurance", objective: "Write a comprehensive test suite for your track's core module.", techRequirements: ["Core Track Tech"], mustInclude: ["Unit tests", "Integration tests"] },
+                { id: "gen_05", displayId: "SYS-GEN-105", title: "Documentation & Handoff", objective: "Prepare complete technical documentation for your project as if handing it off to another engineer.", techRequirements: ["Core Track Tech"], mustInclude: ["Setup instructions", "Architecture overview"] }
             ]
         };
 
@@ -1255,31 +1274,31 @@
         initFirebase();
 
         async function ensureCurrentBatch() {
-            const batchRef = docFns.doc(db, "meta", "currentBatch");
-            const snap = await docFns.getDoc(batchRef);
-            const now = Date.now();
+            try {
+                const batchRef = docFns.doc(db, "meta", "currentBatch");
+                const snap = await docFns.getDoc(batchRef);
+                const now = Date.now();
 
-            if (!snap.exists() || snap.data().endDate.toMillis() <= now) {
-                const seatLimit = 4 + Math.floor(Math.random() * 6);
-                const batch = {
-                    batchId: `batch-${now}`,
-                    startDate: docFns.Timestamp.fromMillis(now),
-                    endDate: docFns.Timestamp.fromMillis(now + BATCH_LENGTH_MS),
-                    seatLimit, 
-                    seatsFilled: 0,
-                };
-                try { await docFns.setDoc(batchRef, batch); } catch (err) { console.error(err); }
-            } else {
-                const data = snap.data();
-                if (data.seatsFilled >= data.seatLimit) {
-                    const extraSeats = 1 + Math.floor(Math.random() * 3);
-                    try {
+                if (!snap.exists() || snap.data().endDate.toMillis() <= now) {
+                    const seatLimit = 20 + Math.floor(Math.random() * 6);
+                    const batch = {
+                        batchId: `batch-${now}`,
+                        startDate: docFns.Timestamp.fromMillis(now),
+                        endDate: docFns.Timestamp.fromMillis(now + BATCH_LENGTH_MS),
+                        seatLimit, 
+                        seatsFilled: 0,
+                    };
+                    await docFns.setDoc(batchRef, batch);
+                } else {
+                    const data = snap.data();
+                    if (data.seatsFilled >= data.seatLimit) {
+                        const extraSeats = 3 + Math.floor(Math.random() * 4);
                         await docFns.updateDoc(batchRef, {
                             seatLimit: docFns.increment(extraSeats)
                         });
-                    } catch (err) { console.error(err); }
+                    }
                 }
-            }
+            } catch (err) { console.error("Batch error:", err); }
         }
 
         function renderBatch(batch) {
@@ -1409,62 +1428,65 @@
 
         async function sendWelcomeEmailWithHtmlTasks(name, email, track, appId, tasks, startDate, deadline) {
             if (EMAILJS_PUBLIC_KEY === "YOUR_EMAILJS_PUBLIC_KEY" || !window.emailjs) return;
-            
+
             try {
                 const trackLabel = getTrackLabel(track);
                 let tasksHtml = '';
-                
-                // 🔥 THE FIX: EXTREMELY ROBUST EMAIL UI WITH TABLE LAYOUT 🔥
+
+                // 🔥 COMPLETELY OPTIMIZED EMAIL UI TO FIX ALL WRAPPING AND FORMATTING 🔥
                 if (tasks && tasks.length > 0) {
                     tasksHtml = `
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: 0 auto; background-color: #050505; border: 1px solid #222222; border-radius: 8px; font-family: Arial, sans-serif; border-collapse: separate; overflow: hidden;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: 0 auto; background-color: #050505; border: 1px solid #222222; border-radius: 8px; overflow: hidden; font-family: Arial, sans-serif;">
                         <tr>
                             <td style="background-color: #111111; padding: 12px 16px; border-bottom: 1px solid #222222;">
                                 <table cellpadding="0" cellspacing="0" border="0">
                                     <tr>
-                                        <td style="width: 12px; height: 12px; border-radius: 50%; background-color: #ff5f56; margin-right: 6px;"></td>
-                                        <td style="width: 6px;"></td>
-                                        <td style="width: 12px; height: 12px; border-radius: 50%; background-color: #ffbd2e; margin-right: 6px;"></td>
-                                        <td style="width: 6px;"></td>
-                                        <td style="width: 12px; height: 12px; border-radius: 50%; background-color: #27c93f;"></td>
+                                        <td style="width: 12px; height: 12px; border-radius: 50%; background-color: #ff5f56; font-size: 0px; line-height: 0px;">&nbsp;</td>
+                                        <td style="width: 8px; font-size: 0px; line-height: 0px;">&nbsp;</td>
+                                        <td style="width: 12px; height: 12px; border-radius: 50%; background-color: #ffbd2e; font-size: 0px; line-height: 0px;">&nbsp;</td>
+                                        <td style="width: 8px; font-size: 0px; line-height: 0px;">&nbsp;</td>
+                                        <td style="width: 12px; height: 12px; border-radius: 50%; background-color: #27c93f; font-size: 0px; line-height: 0px;">&nbsp;</td>
                                     </tr>
                                 </table>
                             </td>
                         </tr>
                         <tr>
-                            <td style="padding: 24px;">
+                            <td style="padding: 24px; color: #D4D4D8;">
                                 ${tasks.map((t, i) => `
                                     <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px dashed #333333;">
-                                        <div style="color: #A855F7; font-family: 'Courier New', Courier, monospace; font-size: 14px; font-weight: bold; margin-bottom: 12px;">
+                                        
+                                        <div style="color: #A855F7; font-family: 'Courier New', Courier, monospace; font-size: 14px; font-weight: bold; margin-bottom: 10px; line-height: 1.4;">
                                             [root@shipyard]~$ execute task_${i+1} --id=${t.displayId || 'TBD'}
                                         </div>
-                                        <div style="color: #22C55E; font-family: 'Courier New', Courier, monospace; font-size: 16px; font-weight: bold; margin-bottom: 20px;">
+                                        
+                                        <div style="color: #10B981; font-family: 'Courier New', Courier, monospace; font-size: 16px; font-weight: bold; margin-bottom: 16px;">
                                             &gt; ${t.title}
                                         </div>
                                         
-                                        <div style="margin-bottom: 16px;">
-                                            <span style="color: #E4E4E7; font-family: 'Courier New', Courier, monospace; font-size: 15px; font-weight: bold;">Objective:</span><br>
-                                            <span style="color: #D4D4D8; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">${t.objective}</span>
+                                        <div style="margin-bottom: 12px;">
+                                            <div style="color: #E4E4E7; font-family: 'Courier New', Courier, monospace; font-size: 13px; font-weight: bold; margin-bottom: 4px;">Objective:</div>
+                                            <div style="font-size: 14px; line-height: 1.5; color: #D4D4D8;">${t.objective}</div>
+                                        </div>
+                                        
+                                        <div style="margin-bottom: 12px;">
+                                            <div style="color: #E4E4E7; font-family: 'Courier New', Courier, monospace; font-size: 13px; font-weight: bold; margin-bottom: 4px;">Tech Stack:</div>
+                                            <div style="font-size: 14px; line-height: 1.5; color: #D4D4D8;">${(t.techRequirements || []).join(' / ')}</div>
                                         </div>
                                         
                                         <div style="margin-bottom: 16px;">
-                                            <span style="color: #E4E4E7; font-family: 'Courier New', Courier, monospace; font-size: 15px; font-weight: bold;">Tech Stack:</span><br>
-                                            <span style="color: #D4D4D8; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">${(t.techRequirements || []).join(' / ')}</span>
+                                            <div style="color: #E4E4E7; font-family: 'Courier New', Courier, monospace; font-size: 13px; font-weight: bold; margin-bottom: 6px;">Must Include:</div>
+                                            <ul style="margin: 0 0 0 20px; padding: 0; color: #D4D4D8; font-size: 14px; line-height: 1.5;">
+                                                ${(t.mustInclude || []).map(f => `<li style="margin-bottom: 4px;">${f}</li>`).join('')}
+                                            </ul>
                                         </div>
                                         
-                                        <div style="margin-bottom: 20px;">
-                                            <span style="color: #E4E4E7; font-family: 'Courier New', Courier, monospace; font-size: 15px; font-weight: bold;">Must Include:</span><br>
-                                            ${(t.mustInclude || []).map(f => `
-                                                <span style="color: #D4D4D8; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.8;">&nbsp;&nbsp;&bull; ${f}</span><br>
-                                            `).join('')}
-                                        </div>
-                                        
-                                        <div style="color: #F59E0B; font-family: 'Courier New', Courier, monospace; font-size: 13px; line-height: 1.6;">
-                                            Output Required: Public GitHub repo<br>+ live hosted link
+                                        <div style="color: #F59E0B; font-family: 'Courier New', Courier, monospace; font-size: 13px; line-height: 1.5;">
+                                            Output Required: Public GitHub repo + live hosted link
                                         </div>
                                     </div>
                                 `).join('')}
-                                <div style="color: #A855F7; font-family: 'Courier New', Courier, monospace; font-size: 14px; font-weight: bold;">
+                                
+                                <div style="color: #A855F7; font-family: 'Courier New', Courier, monospace; font-size: 14px; font-weight: bold; line-height: 1.4;">
                                     [root@shipyard]~$ waiting for submission... &#9608;
                                 </div>
                             </td>
@@ -1473,13 +1495,13 @@
                     `;
                 } else {
                     tasksHtml = `
-                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: 0 auto; background-color: #050505; border: 1px solid #222222; border-radius: 8px; font-family: Arial, sans-serif;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; margin: 0 auto; background-color: #050505; border: 1px solid #222222; border-radius: 8px;">
                         <tr>
                             <td style="padding: 25px; text-align: center;">
-                                <p style="color: #F59E0B; font-family: 'Courier New', Courier, monospace; font-size: 14px; font-weight: bold;">
-                                    [root@shipyard]~$ status --track="${trackLabel}"
+                                <p style="color: #F59E0B; font-family: 'Courier New', Courier, monospace; font-size: 14px; font-weight: bold; margin-bottom: 12px;">
+                                    [root@shipyard]~$ status<br/>--track="${trackLabel}"
                                 </p>
-                                <p style="color: #A1A1AA; font-size: 15px; margin-top: 12px;">
+                                <p style="color: #A1A1AA; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5; margin: 0;">
                                     Tasks for the ${trackLabel} pool are currently being synced. Your specific assignment will be updated in your terminal soon.
                                 </p>
                             </td>
@@ -1530,15 +1552,12 @@
                 }
 
                 await ensureCurrentBatch();
+                
                 const batchRef = docFns.doc(db, "meta", "currentBatch");
-                if (!latestBatch) {
-                    const batchSnap = await docFns.getDoc(batchRef);
-                    if (!batchSnap.exists()) throw new Error("Could not load this week's batch.");
-                    latestBatch = batchSnap.data();
-                }
-                const batch = latestBatch;
-                const seatAvailable = batch.seatsFilled < batch.seatLimit;
+                let batchSnap = await docFns.getDoc(batchRef);
+                let batch = batchSnap.exists() ? batchSnap.data() : latestBatch;
 
+                // EVERYONE IS ASSIGNED
                 const tasksQuery = docFns.query(docFns.collection(db, "tasks"), docFns.where("track", "==", track), docFns.where("active", "==", true));
                 const tasksSnap = await docFns.getDocs(tasksQuery);
                 let allTasks = tasksSnap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -1548,46 +1567,41 @@
                 }
 
                 let assignedTasks = [], assignedTaskIds = [];
-                if (allTasks.length > 0) {
-                    const desiredCount = MIN_TASKS + Math.floor(Math.random() * (MAX_TASKS - MIN_TASKS + 1));
-                    const chosen = pickRandomTasks(allTasks, desiredCount);
-                    assignedTasks = chosen.map(t => ({ 
-                        id: t.id, 
-                        displayId: t.displayId, 
-                        title: t.title, 
-                        track: t.track || track, 
-                        objective: t.objective, 
-                        techRequirements: t.techRequirements || [], 
-                        mustInclude: t.mustInclude || [], 
-                        submissionNotes: t.submissionNotes || "" 
-                    }));
-                    assignedTaskIds = chosen.map(t => t.id);
-                }
+                const desiredCount = MIN_TASKS + Math.floor(Math.random() * (MAX_TASKS - MIN_TASKS + 1));
+                const chosen = pickRandomTasks(allTasks, desiredCount);
+                assignedTasks = chosen.map(t => ({ 
+                    id: t.id, 
+                    displayId: t.displayId, 
+                    title: t.title, 
+                    track: t.track || track, 
+                    objective: t.objective, 
+                    techRequirements: t.techRequirements || [], 
+                    mustInclude: t.mustInclude || [], 
+                    submissionNotes: t.submissionNotes || "" 
+                }));
+                assignedTaskIds = chosen.map(t => t.id);
                 
                 const now = Date.now();
                 const deadline = new Date(now + DEADLINE_DAYS * 24 * 60 * 60 * 1000);
                 const appRef = docFns.doc(docFns.collection(db, "applications"));
-                const status = seatAvailable ? "assigned" : "waitlisted";
+                const status = "assigned"; 
 
                 await docFns.setDoc(appRef, {
-                    name, email, phone, track, status, batchId: batch.batchId,
-                    assignedTaskIds: seatAvailable ? assignedTaskIds : [],
-                    assignedTasks: seatAvailable ? assignedTasks : [],
-                    assignedAt: seatAvailable ? docFns.Timestamp.now() : null,
-                    deadline: seatAvailable ? docFns.Timestamp.fromMillis(now + DEADLINE_DAYS * 24 * 60 * 60 * 1000) : null,
+                    name, email, phone, track, status, batchId: batch.batchId || `batch-${now}`,
+                    assignedTaskIds,
+                    assignedTasks,
+                    assignedAt: docFns.Timestamp.now(),
+                    deadline: docFns.Timestamp.fromMillis(now + DEADLINE_DAYS * 24 * 60 * 60 * 1000),
                     createdAt: docFns.serverTimestamp(),
                 });
 
-                if (seatAvailable) {
-                    await docFns.updateDoc(batchRef, { seatsFilled: docFns.increment(1) });
-                    statusMsg.className = 'status-msg ok';
-                    statusMsg.textContent = '✓ You\'re assigned! Access your terminal below.';
-                    showResultPanel(appRef.id, name, track, assignedTasks, deadline);
-                    sendWelcomeEmailWithHtmlTasks(name, email, track, appRef.id, assignedTasks, new Date(now), deadline);
-                } else {
-                    statusMsg.className = 'status-msg ok';
-                    statusMsg.textContent = '✓ This batch is full — you\'re first in line for next week\'s batch.';
-                }
+                docFns.updateDoc(batchRef, { seatsFilled: docFns.increment(1) }).catch(e => console.error("Increment error", e));
+
+                statusMsg.className = 'status-msg ok';
+                statusMsg.textContent = '✓ You\'re assigned! Access your terminal below.';
+                showResultPanel(appRef.id, name, track, assignedTasks, deadline);
+                sendWelcomeEmailWithHtmlTasks(name, email, track, appRef.id, assignedTasks, new Date(now), deadline);
+                
                 form.reset();
             } catch(err) {
                 console.error(err);

@@ -2,222 +2,235 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin — Dev Internship</title>
+<title>Shipyard Labs — Admin Master Node</title>
 <meta name="robots" content="noindex, nofollow">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
- :root{--indigo:#4b3fcf;--purple:#7c3aed;--bg:#F7F6FE;--border:#ECEBFB;--text:#10151C;--muted:#8B93A3;}
- *{box-sizing:border-box;}
- body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);margin:0;padding:24px;color:var(--text);}
- .wrap{max-width:900px;margin:0 auto;}
- h1{font-size:22px;background:linear-gradient(90deg,var(--indigo),var(--purple));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:4px;}
- .sub{color:var(--muted);font-size:13px;margin-bottom:24px;}
- .card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;}
- .row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
- .name{font-weight:700;font-size:15px;}
- .meta{color:var(--muted);font-size:12px;margin-top:2px;}
- .track{display:inline-block;background:var(--border);color:var(--indigo);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase;margin-top:6px;}
- .taskcount{color:var(--muted);font-size:12px;margin-top:8px;}
- .deadline{color:var(--muted);font-size:12px;margin-top:2px;}
- button.approve{background:linear-gradient(90deg,var(--indigo),var(--purple));color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;}
- button.approve:disabled{opacity:.5;cursor:default;}
- .badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;}
- .badge.sent{background:#DCFCE7;color:#166534;}
- .empty{color:var(--muted);text-align:center;padding:40px;}
- #gate{max-width:320px;margin:80px auto;text-align:center;}
- #gate input{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin:12px 0;font-size:14px;}
- #gate button{width:100%;padding:10px;background:linear-gradient(90deg,var(--indigo),var(--purple));color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;}
- .err{color:#DC2626;font-size:12px;margin-top:8px;}
+    :root {
+        --bg: #050505;
+        --card: rgba(255, 255, 255, 0.03);
+        --border: rgba(255, 255, 255, 0.08);
+        --text: #F3F5F8;
+        --muted: #A1A1AA;
+        --violet: #8B5CF6;
+        --emerald: #10B981;
+        --amber: #F59E0B;
+        --mono: 'JetBrains Mono', monospace;
+        --display: 'Space Grotesk', sans-serif;
+        --body: 'Inter', sans-serif;
+    }
+    
+    * { box-sizing: border-box; }
+    
+    body {
+        font-family: var(--body);
+        background: var(--bg);
+        background-image: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.1), transparent 40%);
+        margin: 0;
+        padding: 24px;
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+    }
+    
+    .wrap { max-width: 1000px; margin: 0 auto; }
+    
+    h1 {
+        font-family: var(--display);
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 8px;
+        letter-spacing: -0.02em;
+    }
+    
+    .sub { color: var(--muted); font-size: 15px; margin-bottom: 32px; }
+    
+    /* Gate UI */
+    #gate { max-width: 360px; margin: 120px auto; text-align: center; background: var(--card); padding: 40px; border-radius: 16px; border: 1px solid var(--border); backdrop-filter: blur(12px); }
+    #gate input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: rgba(0,0,0,0.5); color: #fff; margin: 20px 0; font-family: var(--body); font-size: 15px; }
+    #gate input:focus { outline: none; border-color: var(--violet); }
+    #gate button { width: 100%; padding: 14px; background: var(--violet); color: #fff; border: none; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; }
+    #gate button:hover { background: #7c3aed; }
+    .err { color: #EF4444; font-size: 13px; margin-top: 12px; font-family: var(--mono); }
+
+    /* Dashboard UI */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px; }
+    .student-info .name { font-family: var(--display); font-weight: 700; font-size: 20px; display: flex; align-items: center; gap: 10px; }
+    .student-info .meta { color: var(--muted); font-size: 13px; font-family: var(--mono); margin-top: 4px; }
+    
+    .status-badge { font-family: var(--mono); font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .status-submitted { background: rgba(245, 158, 11, 0.1); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .status-certified { background: rgba(16, 185, 129, 0.1); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.2); }
+
+    .track-tag { display: inline-block; background: rgba(139, 92, 246, 0.1); color: var(--violet); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 600; margin-top: 12px; font-family: var(--mono); }
+
+    .links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 20px; }
+    .task-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .task-box .t-id { font-family: var(--mono); font-size: 11px; color: var(--violet); margin-bottom: 4px; }
+    .task-box .t-title { font-weight: 600; font-size: 15px; margin-bottom: 16px; }
+    
+    .btn-group { display: flex; gap: 8px; }
+    .btn-link { flex: 1; text-align: center; font-family: var(--mono); font-size: 12px; text-decoration: none; padding: 8px; border-radius: 6px; font-weight: 600; transition: 0.2s; }
+    .btn-github { background: #24292e; color: #fff; border: 1px solid #3b424a; }
+    .btn-github:hover { background: #2f363d; }
+    .btn-live { background: rgba(16, 185, 129, 0.1); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .btn-live:hover { background: rgba(16, 185, 129, 0.2); }
+
+    .empty { text-align: center; padding: 60px; color: var(--muted); font-family: var(--mono); font-size: 14px; border: 1px dashed var(--border); border-radius: 12px; }
 </style>
 </head>
 <body>
 
 <div id="gate">
- <h1>Admin Access</h1>
- <input type="password" id="pwInput" placeholder="Enter admin password">
- <button id="pwBtn">Enter</button>
- <div class="err" id="pwErr"></div>
+    <div style="width: 40px; height: 40px; background: var(--violet); border-radius: 8px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: bold;">SY</div>
+    <h1>Master Node</h1>
+    <p style="color: var(--muted); font-size: 14px; margin-bottom: 24px;">Authenticate to view submissions</p>
+    <input type="password" id="pwInput" placeholder="Access key..." autocomplete="off">
+    <button id="pwBtn">Decrypt Data</button>
+    <div class="err" id="pwErr"></div>
 </div>
 
 <div class="wrap" id="panel" style="display:none;">
- <h1>New Applicants</h1>
- <div class="sub">Approve to send the task email and offer email together. List updates live.</div>
- <div id="list"></div>
+    <h1>Submission Matrix</h1>
+    <div class="sub">Live feed of all developer code submissions. Ready for review.</div>
+    <div id="list"></div>
 </div>
 
 <script type="module">
- const ADMIN_PASSWORD = "Aditya123#";
+    // Change your password here if needed
+    const ADMIN_PASSWORD = "Aditya123#";
 
- const gate = document.getElementById('gate');
- const panel = document.getElementById('panel');
+    const gate = document.getElementById('gate');
+    const panel = document.getElementById('panel');
 
- function unlock(){
-   gate.style.display = 'none';
-   panel.style.display = 'block';
-   init();
- }
+    function unlock() {
+        gate.style.display = 'none';
+        panel.style.display = 'block';
+        initFirebase();
+    }
 
- document.getElementById('pwBtn').addEventListener('click', () => {
-   const val = document.getElementById('pwInput').value;
-   if(val === ADMIN_PASSWORD){
-     sessionStorage.setItem('adminOk','1');
-     unlock();
-   } else {
-     document.getElementById('pwErr').textContent = 'Wrong password.';
-   }
- });
+    document.getElementById('pwBtn').addEventListener('click', () => {
+        const val = document.getElementById('pwInput').value;
+        if(val === ADMIN_PASSWORD) {
+            sessionStorage.setItem('adminOk','1');
+            unlock();
+        } else {
+            document.getElementById('pwErr').textContent = 'Invalid credentials. Access denied.';
+        }
+    });
 
- if(sessionStorage.getItem('adminOk') === '1'){ unlock(); }
+    document.getElementById('pwInput').addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') document.getElementById('pwBtn').click();
+    });
 
- const firebaseConfig = {
-   apiKey: "AIzaSyBX1a6jx2YlyzJOQ9Fr9fnZ6BCCwwN-FBQ",
-   authDomain: "internship-764c3.firebaseapp.com",
-   projectId: "internship-764c3",
-   storageBucket: "internship-764c3.firebasestorage.app",
-   messagingSenderId: "678513496959",
-   appId: "1:678513496959:web:9163a84e50ebe9d642004a"
- };
+    if(sessionStorage.getItem('adminOk') === '1'){ unlock(); }
 
- const EMAILJS_PUBLIC_KEY = "IcT1qOhZvYmcrvua1";
- const EMAILJS_SERVICE_ID = "service_5qhty2d";
- const EMAILJS_TASKS_TEMPLATE_ID = "template_kblft3d";
- const EMAILJS_OFFER_TEMPLATE_ID = "template_iwbdywa";
- const SUBMISSION_URL_BASE = "submit.html";
+    const firebaseConfig = {
+        apiKey: "AIzaSyBX1a6jx2YlyzJOQ9Fr9fnZ6BCCwwN-FBQ",
+        authDomain: "internship-764c3.firebaseapp.com",
+        projectId: "internship-764c3",
+        storageBucket: "internship-764c3.firebasestorage.app",
+        messagingSenderId: "678513496959",
+        appId: "1:678513496959:web:9163a84e50ebe9d642004a"
+    };
 
- let db, fs;
- let currentRows = {}; // id -> full application record, kept in sync with the live query
+    let db, fs;
 
- async function init(){
-   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-   fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-   const app = initializeApp(firebaseConfig);
-   db = fs.getFirestore(app);
+    async function initFirebase() {
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+        fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const app = initializeApp(firebaseConfig);
+        db = fs.getFirestore(app);
 
-   if(window.emailjs && EMAILJS_PUBLIC_KEY){
-     window.emailjs.init(EMAILJS_PUBLIC_KEY);
-   }
+        // Fetch ONLY users who have submitted their code (or completed payment/certified)
+        const q = fs.query(
+            fs.collection(db, "applications"), 
+            fs.where("status", "in", ["submitted", "certified"])
+        );
 
-   const q = fs.query(fs.collection(db,"applications"), fs.where("status","==","assigned"));
-   fs.onSnapshot(q, (snap) => {
-     const rows = [];
-     currentRows = {};
-     snap.forEach(d => {
-       const data = { id: d.id, ...d.data() };
-       currentRows[d.id] = data;
-       rows.push(data);
-     });
-     render(rows);
-   });
- }
+        fs.onSnapshot(q, (snap) => {
+            const rows = [];
+            snap.forEach(d => {
+                rows.push({ id: d.id, ...d.data() });
+            });
+            
+            // Sort by latest submission first (client side sorting)
+            rows.sort((a, b) => {
+                const timeA = a.submittedAt ? a.submittedAt.toMillis() : 0;
+                const timeB = b.submittedAt ? b.submittedAt.toMillis() : 0;
+                return timeB - timeA;
+            });
+            
+            render(rows);
+        });
+    }
 
- function escapeHtml(s){
-   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- }
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
 
- function formatDate(ts){
-   if(!ts || !ts.toDate) return '—';
-   return ts.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
- }
+    function formatDate(ts) {
+        if(!ts || !ts.toDate) return '—';
+        return ts.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+    }
 
- function render(rows){
-   const list = document.getElementById('list');
-   if(rows.length === 0){
-     list.innerHTML = '<div class="empty">No new applicants right now.</div>';
-     return;
-   }
-   list.innerHTML = rows.map(cardHtml).join('');
- }
+    function render(rows) {
+        const list = document.getElementById('list');
+        if(rows.length === 0) {
+            list.innerHTML = '<div class="empty">[root@shipyard]~$ Waiting for code matrices to be pushed...</div>';
+            return;
+        }
+        list.innerHTML = rows.map(cardHtml).join('');
+    }
 
- function cardHtml(r){
-   const sent = r.emailsSent === true;
-   const actionHtml = sent
-     ? '<span class="badge sent">Emails Sent</span>'
-     : '<button class="approve">Approve</button>';
-   const taskCount = (r.assignedTasks || []).length;
-   return `
-     <div class="card" data-id="${escapeHtml(r.id)}">
-       <div class="row">
-         <div>
-           <div class="name">${escapeHtml(r.name || '')}</div>
-           <div class="meta">${escapeHtml(r.email || '')} &middot; ${escapeHtml(r.phone || '')}</div>
-           <span class="track">${escapeHtml(r.track || '')}</span>
-           <div class="taskcount">${taskCount} task${taskCount === 1 ? '' : 's'} assigned</div>
-           <div class="deadline">Deadline: ${formatDate(r.deadline)}</div>
-         </div>
-         <div>${actionHtml}</div>
-       </div>
-     </div>
-   `;
- }
+    function cardHtml(r) {
+        const statusClass = r.status === 'certified' ? 'status-certified' : 'status-submitted';
+        const statusText = r.status === 'certified' ? '✓ Verified & Paid' : '⏳ Submitted (Pending Payment)';
+        
+        let linksHtml = '<div class="links-grid">';
+        
+        // Match assigned tasks with submitted URLs
+        if (r.submissionLinks && r.submissionLinks.length > 0) {
+            r.submissionLinks.forEach(linkObj => {
+                // Find the task details
+                const taskDef = (r.assignedTasks || []).find(t => t.id === linkObj.taskId) || {};
+                const tTitle = taskDef.title || 'Unknown Task';
+                const tId = taskDef.displayId || linkObj.taskId;
+                
+                linksHtml += `
+                    <div class="task-box">
+                        <div class="t-id">${escapeHtml(tId)}</div>
+                        <div class="t-title">${escapeHtml(tTitle)}</div>
+                        <div class="btn-group">
+                            <a href="${escapeHtml(linkObj.githubUrl)}" target="_blank" class="btn-link btn-github">GitHub Repo</a>
+                            <a href="${escapeHtml(linkObj.liveUrl)}" target="_blank" class="btn-link btn-live">Live App</a>
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            linksHtml += `<div style="color: var(--muted); font-size: 14px;">No URLs provided.</div>`;
+        }
+        linksHtml += '</div>';
 
- function buildTasksText(tasks){
-   return tasks.map((t, i) => `
-----------------------------------------
-TASK ${i + 1} -- ${t.displayId}
-----------------------------------------
-${t.title}
-
-OBJECTIVE:
-${t.objective}
-
-TECH STACK:
-${(t.techRequirements || []).join(' | ')}
-
-MUST INCLUDE:
-${(t.mustInclude || []).map(f => `  - ${f}`).join('\n')}
-
-SUBMIT:
-${t.submissionNotes || 'Public GitHub repo + hosted live link'}
-`).join('\n\n');
- }
-
- document.getElementById('list').addEventListener('click', async (e) => {
-   const btn = e.target.closest('.approve');
-   if(!btn) return;
-   const card = btn.closest('.card');
-   const id = card.dataset.id;
-   const r = currentRows[id];
-   if(!r){ alert('Record not found, try refreshing.'); return; }
-
-   btn.disabled = true;
-   btn.textContent = 'Approving...';
-
-   try{
-     await fs.updateDoc(fs.doc(db, "applications", id), {
-       emailsSent: true,
-       emailsSentAt: fs.serverTimestamp(),
-     });
-
-     if(window.emailjs){
-       const deadlineStr = formatDate(r.deadline);
-       const tasksText = buildTasksText(r.assignedTasks || []);
-       const submitLink = `${window.location.origin}${window.location.pathname.replace('admin.html','')}${SUBMISSION_URL_BASE}?app=${id}`;
-
-       // Task email
-       window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TASKS_TEMPLATE_ID, {
-         to_email: r.email,
-         to_name: r.name,
-         track: r.track,
-         deadline: deadlineStr,
-         tasks_text: tasksText,
-         submit_link: submitLink,
-       }).catch(err => console.error("Task email failed:", err));
-
-       // Offer email
-       window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_OFFER_TEMPLATE_ID, {
-         to_name: r.name,
-         to_email: r.email,
-         track: r.track,
-         start_date: deadlineStr,
-         offer_message: 'Congratulations! You have been selected for the ' + r.track + ' internship track.',
-       }).catch(err => console.error("Offer email failed:", err));
-     }
-   }catch(err){
-     alert('Approve failed: ' + err.message);
-     btn.disabled = false;
-     btn.textContent = 'Approve';
-   }
- });
+        return `
+            <div class="card">
+                <div class="card-header">
+                    <div class="student-info">
+                        <div class="name">${escapeHtml(r.name || 'Unknown')}</div>
+                        <div class="meta">${escapeHtml(r.email || '')} &nbsp;|&nbsp; ${escapeHtml(r.phone || '')} &nbsp;|&nbsp; Submitted: ${formatDate(r.submittedAt)}</div>
+                        <div class="track-tag">${escapeHtml(r.track || 'Track')} Developer</div>
+                    </div>
+                    <div class="status-badge ${statusClass}">${statusText}</div>
+                </div>
+                <div>
+                    <h3 style="font-size: 14px; color: var(--muted); margin: 0; font-weight: 500;">Submitted Repositories:</h3>
+                    ${linksHtml}
+                </div>
+            </div>
+        `;
+    }
 </script>
 </body>
 </html>
