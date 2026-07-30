@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /submit.html
 
-Sitemap: https://shiptasks.dev/sitemap.xml
+Sitemap: https://internship-764c3.web.app/sitemap.xml
