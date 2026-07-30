@@ -18,8 +18,6 @@
     <!-- ========================================== -->
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <!-- RAZORPAY CHECKOUT -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <style>
         :root {
@@ -137,6 +135,20 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .hidden { display: none !important; }
         .center-note { text-align: center; font-size: 14px; color: var(--muted); margin-top: 16px; }
+
+        /* QR Code Container Styling */
+        #qr-container {
+            display: none; 
+            margin: 15px auto; 
+            padding: 15px; 
+            background: #fff; 
+            border-radius: 12px; 
+            width: fit-content;
+        }
+        #qr-container img {
+            display: block;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body>
@@ -204,7 +216,7 @@
             <div class="status-msg" id="tasks-msg"></div>
         </div>
 
-        <!-- PAYMENT WALL -->
+        <!-- PAYMENT WALL (UPDATED TO DIRECT UPI + QR CODE) -->
         <div class="card hidden" id="payment-card">
             <h2>Final Verification &amp; Processing Fee</h2>
             <p class="desc">To verify your GitHub repository build logs and issue your immutable cryptographic certificate hash, complete the verification fee.</p>
@@ -214,7 +226,23 @@
                 <h3 style="margin: 0; font-size: 28px; font-family: var(--display); color: var(--ink);">₹49 <span style="font-size: 14px; font-weight: normal; color: var(--muted);">/ lifetime verification</span></h3>
             </div>
 
-            <button class="btn btn-primary btn-full" id="pay-now-btn">Proceed to Secure Verification (₹49 UPI / Card)</button>
+            <!-- UPI Payment Button -->
+            <button class="btn btn-primary btn-full" id="pay-now-btn" style="margin-bottom: 15px;">Generate Payment Code (QR/Link)</button>
+            
+            <!-- QR Code Container -->
+            <div id="qr-container">
+                <p style="color: #000; font-weight: bold; margin: 0 0 8px 0; font-size: 14px; text-align: center;">Scan with GPay / PhonePe / Paytm</p>
+                <img id="upi-qr-image" src="" alt="UPI QR Code" width="200" height="200" />
+            </div>
+
+            <!-- UTR Input Section (Initially Hidden) -->
+            <div id="utr-section" style="display: none; padding-top: 15px; border-top: 1px dashed var(--panel-border); margin-top: 20px;">
+                <label for="utr-input" style="color: var(--primary-glow); font-weight: bold; margin-bottom: 4px;">Step 2: Enter 12-Digit UTR / Reference No.</label>
+                <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px; margin-top: 0;">After successful payment, enter the transaction ID from your UPI app.</p>
+                <input id="utr-input" type="text" maxlength="12" placeholder="e.g. 312345678901" required />
+                <button class="btn btn-primary btn-full" id="verify-utr-btn">Verify & Generate Certificate</button>
+            </div>
+
             <div class="status-msg" id="payment-msg"></div>
         </div>
 
@@ -253,8 +281,13 @@
             appId: "1:678513496959:web:9163a84e50ebe9d642004a"
         };
 
-        const RAZORPAY_KEY_ID = "rzp_test_TIZUIPS52bkAr1"; 
-        const VERIFICATION_FEE_PAISE = 4900; 
+        // ===============================================
+        // 🚨 YOUR UPI DETAILS
+        // ===============================================
+        const MY_UPI_ID = "singhaditya4560@okhdfcbank"; 
+        const MY_PAYEE_NAME = "Aditya Singh"; 
+        const AMOUNT_INR = "49.00";
+        // ===============================================
 
         const EMAILJS_PUBLIC_KEY = "IcT1qOhZvYmcrvua1";
         const EMAILJS_SERVICE_ID = "service_5qhty2d";
@@ -274,9 +307,16 @@
             taskList: document.getElementById('task-list'),
             submitLinksBtn: document.getElementById('submit-links-btn'),
             tasksMsg: document.getElementById('tasks-msg'),
+            
             paymentCard: document.getElementById('payment-card'),
             payNowBtn: document.getElementById('pay-now-btn'),
+            qrContainer: document.getElementById('qr-container'),
+            upiQrImage: document.getElementById('upi-qr-image'),
+            utrSection: document.getElementById('utr-section'),
+            utrInput: document.getElementById('utr-input'),
+            verifyUtrBtn: document.getElementById('verify-utr-btn'),
             paymentMsg: document.getElementById('payment-msg'),
+            
             generatingCard: document.getElementById('generating-card'),
             certifiedCard: document.getElementById('certified-card'),
             certIdText: document.getElementById('cert-id-text'),
@@ -547,63 +587,61 @@
             }
         });
 
+        // =========================================================
+        // 🔥 NEW PAYMENT LOGIC (SMART: MOBILE INTENT + PC QR CODE) 🔥
+        // =========================================================
         els.payNowBtn.addEventListener('click', () => {
             if (!currentApp || !currentAppId) return;
+            
+            // Check if user is on mobile
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // Generate UPI Intent URI
+            const upiLink = `upi://pay?pa=${MY_UPI_ID}&pn=${encodeURIComponent(MY_PAYEE_NAME)}&am=${AMOUNT_INR}&cu=INR&tn=Verification_Fee_${currentAppId.slice(0,5)}`;
+            
+            if (isMobile) {
+                // If Mobile: Attempt to open UPI app directly
+                window.location.href = upiLink;
+                els.payNowBtn.textContent = 'Open UPI App Again';
+            } else {
+                // If Desktop/PC: Generate and show QR Code
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(upiLink)}`;
+                els.upiQrImage.src = qrUrl;
+                els.qrContainer.style.display = 'block';
+                els.payNowBtn.style.display = 'none'; // Hide the button on PC once clicked
+            }
+            
+            // Show UTR input field for both (Mobile & PC)
+            els.utrSection.style.display = 'block';
+            els.paymentMsg.className = 'status-msg';
+            els.paymentMsg.style.color = 'var(--muted)';
+            
+            if (isMobile) {
+                 els.paymentMsg.textContent = 'If the app did not open, please pay manually using our UPI ID, then enter UTR below.';
+            } else {
+                 els.paymentMsg.textContent = 'Scan the QR code from any UPI app on your phone, then enter the UTR below.';
+            }
+        });
 
-            if (typeof Razorpay === 'undefined') {
+        els.verifyUtrBtn.addEventListener('click', async () => {
+            const utr = els.utrInput.value.trim();
+            
+            // Basic 12-digit UTR validation
+            if (utr.length !== 12 || isNaN(utr)) {
                 els.paymentMsg.className = 'status-msg err';
-                els.paymentMsg.textContent = 'Payment SDK failed to load. Please refresh and try again.';
+                els.paymentMsg.textContent = 'Please enter a valid 12-digit numeric UTR/Reference number.';
                 return;
             }
 
-            els.payNowBtn.disabled = true;
-            els.payNowBtn.textContent = 'Opening secure checkout…';
+            els.verifyUtrBtn.disabled = true;
+            els.verifyUtrBtn.textContent = 'Verifying & Finalizing...';
             els.paymentMsg.textContent = '';
-
-            const options = {
-                key: RAZORPAY_KEY_ID,
-                amount: VERIFICATION_FEE_PAISE,
-                currency: "INR",
-                name: "Shipyard Labs",
-                description: "Certification Verification Fee",
-                prefill: {
-                    name: currentApp.name || "",
-                    email: currentApp.email || "",
-                },
-                theme: { color: "#8B5CF6" },
-                handler: async function (response) {
-                    if (!response.razorpay_payment_id) {
-                        els.paymentMsg.className = 'status-msg err';
-                        els.paymentMsg.textContent = 'Payment verification failed.';
-                        els.payNowBtn.disabled = false;
-                        els.payNowBtn.textContent = 'Proceed to Secure Verification (₹49 UPI / Card)';
-                        return;
-                    }
-
-                    els.payNowBtn.textContent = 'Finalizing certificate…';
-                    await finalizeCertificate(response.razorpay_payment_id);
-                },
-                modal: {
-                    ondismiss: function () {
-                        els.payNowBtn.disabled = false;
-                        els.payNowBtn.textContent = 'Proceed to Secure Verification (₹49 UPI / Card)';
-                    }
-                }
-            };
-
-            const rzp = new Razorpay(options);
-
-            rzp.on('payment.failed', function (response) {
-                els.paymentMsg.className = 'status-msg err';
-                els.paymentMsg.textContent = 'Payment failed: ' + response.error.description;
-                els.payNowBtn.disabled = false;
-                els.payNowBtn.textContent = 'Proceed to Secure Verification (₹49 UPI / Card)';
-            });
-
-            rzp.open();
+            
+            // Pass UTR to finalization
+            await finalizeCertificate(utr);
         });
 
-        async function finalizeCertificate(paymentId) {
+        async function finalizeCertificate(utrReference) {
             showOnly(els.generatingCard);
 
             try {
@@ -627,8 +665,8 @@
                         status: "certified",
                         certId,
                         certifiedAt: fs.serverTimestamp(),
+                        utrSubmitted: utrReference || "N/A" // Manual UTR is saved to Firestore here
                     };
-                    if (paymentId) updates.razorpayPaymentId = paymentId;
 
                     await fs.updateDoc(fs.doc(db, "applications", currentAppId), updates);
                     sendCertificateEmail(certId);
@@ -644,15 +682,13 @@
                 els.certIdText.textContent = `HASH: ${certId}`;
                 showOnly(els.certifiedCard);
 
-                els.payNowBtn.disabled = false;
-                els.payNowBtn.textContent = 'Proceed to Secure Verification (₹49 UPI / Card)';
             } catch (err) {
                 console.error("Certificate Generation Error:", err);
                 els.paymentMsg.className = 'status-msg err';
                 els.paymentMsg.textContent = 'Failed to generate certificate: ' + err.message;
                 showOnly(els.paymentCard); 
-                els.payNowBtn.disabled = false;
-                els.payNowBtn.textContent = 'Retry Verification';
+                els.verifyUtrBtn.disabled = false;
+                els.verifyUtrBtn.textContent = 'Retry Verification';
             }
         }
 
