@@ -16,8 +16,8 @@
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <!-- RAZORPAY CHECKOUT -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+   
     
     <style>
         :root {
@@ -203,22 +203,32 @@
             
             <button class="btn btn-primary btn-full" id="submit-links-btn" style="margin-top:16px;">Push Submission to Master</button>
             <div class="status-msg" id="tasks-msg"></div>
+        </div><!-- PAYMENT WALL (UPI QR & UTR) -->
+<div class="card hidden" id="payment-card">
+    <h2>Final Verification & Processing Fee</h2>
+    <p class="desc">Scan the QR code below using any UPI app (GPay, PhonePe, Paytm) to pay ₹49.</p>
+    
+    <div class="qr-box" style="background: rgba(139, 92, 246, 0.05); border: 1px solid var(--primary-glow); border-radius: 10px; padding: 20px; margin-bottom: 24px; text-align: center;">
+        <p style="margin: 0; font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.5px;">SCAN QR TO PAY ₹49</p>
+        
+        <div class="qr-frame" style="display: inline-block; background: #ffffff; padding: 12px; border-radius: 8px; margin: 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+            <img id="upi-qrcode-img" 
+                 src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&data=upi%3A%2F%2Fpay%3Fpa%3D7068003894%40ptyes%26pn%3DShipyardLabs%26am%3D49%26cu%3DINR" 
+                 style="display: block; width: 150px; height: 150px; border: none;" 
+                 alt="UPI QR Code" />
         </div>
+        
+        <p style="margin: 0; font-size: 13px; color: var(--muted);">UPI ID: <strong style="color: var(--ink);">7068003894@ptyes</strong></p>
+    </div>
 
-        <!-- PAYMENT WALL (STRICTLY LOCKED) -->
-        <div class="card hidden" id="payment-card">
-            <h2>Final Verification & Processing Fee</h2>
-            <p class="desc">To verify your GitHub repository build logs and issue your immutable cryptographic certificate hash, complete the verification fee.</p>
-            
-            <div style="background: rgba(139, 92, 246, 0.05); border: 1px solid var(--primary-glow); border-radius: 8px; padding: 20px; margin-bottom: 24px; text-align: center;">
-                <p style="margin: 0 0 8px 0; font-family: var(--mono); font-size: 12px; color: var(--muted);">CERTIFICATION PROCESSING FEE</p>
-                <h3 style="margin: 0; font-size: 28px; font-family: var(--display); color: var(--ink);">₹49 <span style="font-size: 14px; font-weight: normal; color: var(--muted);">/ lifetime verification</span></h3>
-            </div>
+    <div class="form-group" style="margin-bottom: 20px;">
+        <label for="utr-input">ENTER UPI REFERENCE / TRANSACTION ID (UTR)</label>
+        <input id="utr-input" type="text" placeholder="e.g. 4032xxxxxxxx" maxlength="20" />
+    </div>
 
-            <button class="btn btn-primary btn-full" id="pay-now-btn">Proceed to Secure Verification (₹49 UPI / Card)</button>
-            <div class="status-msg" id="payment-msg"></div>
-        </div>
-
+    <button class="btn btn-primary btn-full" id="pay-now-btn">Verify Payment & Generate Certificate</button>
+    <div class="status-msg" id="payment-msg"></div>
+</div>
         <!-- GENERATING -->
         <div class="card hidden" id="generating-card">
             <div class="cert-box">
@@ -510,100 +520,65 @@
         // ---------------------------------------------------------
         // ₹49 REAL RAZORPAY PAYMENT (client-side checkout)
         // ---------------------------------------------------------
-        els.payNowBtn.addEventListener('click', () => {
-            if (!currentApp || !currentAppId) return;
+    // ---------------------------------------------------------
+// UPI QR & UTR VERIFICATION LOGIC
+// ---------------------------------------------------------
+els.payNowBtn.addEventListener('click', async () => {
+    if (!currentApp || !currentAppId) return;
 
-            if (typeof Razorpay === 'undefined') {
-                els.paymentMsg.className = 'status-msg err';
-                els.paymentMsg.textContent = 'Payment SDK failed to load. Please refresh and try again.';
-                return;
-            }
+    const utrInput = document.getElementById('utr-input');
+    const utr = utrInput ? utrInput.value.trim() : "";
 
-            els.payNowBtn.disabled = true;
-            els.payNowBtn.textContent = 'Opening secure checkout…';
-            els.paymentMsg.textContent = '';
+    if (!utr || utr.length < 8) {
+        els.paymentMsg.className = 'status-msg err';
+        els.paymentMsg.textContent = 'Please enter a valid UPI Transaction ID (UTR).';
+        return;
+    }
 
-            const options = {
-                key: RAZORPAY_KEY_ID,
-                amount: VERIFICATION_FEE_PAISE,
-                currency: "INR",
-                name: "Shipyard Labs",
-                description: "Certification Verification Fee",
-                prefill: {
-                    name: currentApp.name || "",
-                    email: currentApp.email || "",
-                },
-                theme: { color: "#8B5CF6" },
-                handler: async function (response) {
-                    // response.razorpay_payment_id IS MANDATORY HERE
-                    if (!response.razorpay_payment_id) {
-                        els.paymentMsg.className = 'status-msg err';
-                        els.paymentMsg.textContent = 'Payment verification failed.';
-                        els.payNowBtn.disabled = false;
-                        els.payNowBtn.textContent = 'Proceed to Secure Verification (₹49 UPI / Card)';
-                        return;
-                    }
-                    
-                    els.payNowBtn.textContent = 'Finalizing certificate…';
-                    
-                    try {
-                        showOnly(els.generatingCard);
-                        const certId = `CERT-${currentAppId.slice(0, 8).toUpperCase()}`;
-                        const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
-                        
-                        const pdfBytes = await buildCertificatePdf({ 
-                            name: currentApp.name, 
-                            track: currentApp.track, 
-                            certId, 
-                            dateStr 
-                        });
+    els.payNowBtn.disabled = true;
+    els.payNowBtn.textContent = 'Verifying UTR & Generating Certificate…';
+    els.paymentMsg.textContent = '';
 
-                        // ONLY NOW, AFTER SUCCESSFUL PAYMENT VERIFICATION:
-                        await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
-                            paymentClaimed: true,  // ✅ STRICTLY TRUE NOW
-                            status: "certified",
-                            certId,
-                            razorpayPaymentId: response.razorpay_payment_id,
-                            certifiedAt: fs.serverTimestamp(),
-                        });
-
-                        currentApp.status = "certified";
-                        currentApp.paymentClaimed = true;
-                        currentApp.certId = certId;
-
-                        els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${certId}.pdf`);
-
-                        setStepper(3);
-                        els.certIdText.textContent = `HASH: ${certId}`;
-                        showOnly(els.certifiedCard);
-                        
-                    } catch (err) {
-                        console.error("Post-payment processing failed:", err);
-                        els.paymentMsg.className = 'status-msg err';
-                        els.paymentMsg.textContent = 'Payment succeeded but certificate generation failed. Contact support with payment ID: ' + response.razorpay_payment_id;
-                        els.payNowBtn.disabled = false;
-                        els.payNowBtn.textContent = 'Proceed to Secure Verification (₹49 UPI / Card)';
-                    }
-                },
-                modal: {
-                    ondismiss: function () {
-                        els.payNowBtn.disabled = false;
-                        els.payNowBtn.textContent = 'Proceed to Secure Verification (₹49 UPI / Card)';
-                    }
-                }
-            };
-
-            const rzp = new Razorpay(options);
-
-            rzp.on('payment.failed', function (response) {
-                els.paymentMsg.className = 'status-msg err';
-                els.paymentMsg.textContent = 'Payment failed: ' + response.error.description;
-                els.payNowBtn.disabled = false;
-                els.payNowBtn.textContent = 'Proceed to Secure Verification (₹49 UPI / Card)';
-            });
-
-            rzp.open();
+    try {
+        showOnly(els.generatingCard);
+        const certId = `CERT-${currentAppId.slice(0, 8).toUpperCase()}`;
+        const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+        
+        const pdfBytes = await buildCertificatePdf({ 
+            name: currentApp.name, 
+            track: currentApp.track, 
+            certId, 
+            dateStr 
         });
+
+        // Firestore me payment true aur status certified update karein
+        await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
+            paymentClaimed: true,
+            status: "certified",
+            certId,
+            upiUtrId: utr,
+            certifiedAt: fs.serverTimestamp(),
+        });
+
+        currentApp.status = "certified";
+        currentApp.paymentClaimed = true;
+        currentApp.certId = certId;
+
+        els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${certId}.pdf`);
+
+        setStepper(3);
+        els.certIdText.textContent = `HASH: ${certId}`;
+        showOnly(els.certifiedCard);
+        
+    } catch (err) {
+        console.error("Processing failed:", err);
+        els.paymentMsg.className = 'status-msg err';
+        els.paymentMsg.textContent = 'Error occurred: ' + err.message;
+        els.payNowBtn.disabled = false;
+        els.payNowBtn.textContent = 'Verify Payment & Generate Certificate';
+        showOnly(els.paymentCard);
+    }
+});
 
         // ---------------------------------------------------------
         // PDF GENERATION UTILITIES
@@ -801,6 +776,10 @@
         // ==============================================================
         // 🔴 NEW CYBERPUNK DARK THEME CERTIFICATE GENERATOR
         // ==============================================================
+  // ==============================================================
+   // ==============================================================
+        // 🏆 ULTIMATE PROFESSIONAL CERTIFICATE - PERFECT WATERMARK & SPACING
+        // ==============================================================
         async function buildCertificatePdf({ name, track, certId, dateStr }) {
             const { PDFDocument, rgb, StandardFonts } = PDFLib;
             const pdfDoc = await PDFDocument.create();
@@ -812,83 +791,117 @@
             const mono = await pdfDoc.embedFont(StandardFonts.Courier);
             const monoBold = await pdfDoc.embedFont(StandardFonts.CourierBold);
 
-            // Dark Theme Colors
-            const bg = rgb(0.04, 0.04, 0.05); // #0a0a0c
-            const inkWhite = rgb(0.98, 0.98, 0.99); // #FAFAFA
-            const inkMuted = rgb(0.63, 0.63, 0.67); // #A1A1AA
-            const violet = rgb(0.54, 0.36, 0.96); // #8B5CF6
-            const gold = rgb(0.96, 0.62, 0.04); // #F59E0B
-            const lineSoft = rgb(0.15, 0.15, 0.18); 
+            // Luxury Paper Palette
+            const bgPaper = rgb(0.98, 0.98, 0.96);      
+            const goldPrimary = rgb(0.85, 0.65, 0.18);   
+            const goldDim = rgb(0.68, 0.52, 0.14);      
+            const goldDark = rgb(0.48, 0.36, 0.08);     
+            const textDark = rgb(0.12, 0.12, 0.18);     
+            const textMuted = rgb(0.45, 0.45, 0.52);    
+            const accentPurple = rgb(0.35, 0.15, 0.75); 
 
-            // Background Fill
-            page.drawRectangle({ x: 0, y: 0, width, height, color: bg });
+            // 1. Background & Border Frame
+            page.drawRectangle({ x: 0, y: 0, width, height, color: bgPaper });
+            page.drawRectangle({ x: 16, y: 16, width: width - 32, height: height - 32, color: bgPaper, borderColor: goldPrimary, borderWidth: 2 });
+            page.drawRectangle({ x: 22, y: 22, width: width - 44, height: height - 44, color: bgPaper, borderColor: accentPurple, borderWidth: 1 });
 
-            // Outer Border (Tech Style)
-            page.drawRectangle({ x: 24, y: 24, width: width - 48, height: height - 48, borderColor: lineSoft, borderWidth: 1 });
-            page.drawRectangle({ x: 30, y: 30, width: width - 60, height: height - 60, borderColor: violet, borderWidth: 1, opacity: 0.5 });
+            // 2. Clean Centered Background Watermark (Properly Positioned & Subtle)
+            const watermarkText = "10X ENGINEER // SHIPYARD LABS";
+            const wmFontSize = 42;
+            const wmWidth = monoBold.widthOfTextAtSize(watermarkText, wmFontSize);
+            page.drawText(watermarkText, { 
+                x: (width - wmWidth) / 2, 
+                y: height / 2 - 10, 
+                size: wmFontSize, 
+                font: monoBold, 
+                color: accentPurple, 
+                opacity: 0.035,
+                rotate: { type: 'degrees', angle: 15 }
+            });
 
-            // Corner Brackets for Cyberpunk feel
-            const cornerSize = 20;
-            const t = 3; 
-            // Top Left
-            page.drawLine({ start: {x: 24, y: height-24}, end: {x: 24+cornerSize, y: height-24}, thickness: t, color: violet });
-            page.drawLine({ start: {x: 24, y: height-24}, end: {x: 24, y: height-24-cornerSize}, thickness: t, color: violet });
-            // Top Right
-            page.drawLine({ start: {x: width-24, y: height-24}, end: {x: width-24-cornerSize, y: height-24}, thickness: t, color: violet });
-            page.drawLine({ start: {x: width-24, y: height-24}, end: {x: width-24, y: height-24-cornerSize}, thickness: t, color: violet });
-            // Bottom Left
-            page.drawLine({ start: {x: 24, y: 24}, end: {x: 24+cornerSize, y: 24}, thickness: t, color: violet });
-            page.drawLine({ start: {x: 24, y: 24}, end: {x: 24, y: 24+cornerSize}, thickness: t, color: violet });
-            // Bottom Right
-            page.drawLine({ start: {x: width-24, y: 24}, end: {x: width-24-cornerSize, y: 24}, thickness: t, color: violet });
-            page.drawLine({ start: {x: width-24, y: 24}, end: {x: width-24, y: 24+cornerSize}, thickness: t, color: violet });
+            // 3. Elegant Gold Corner Accents
+            const cs = 24, ct = 3;
+            const drawCorner = (x, y, dx, dy) => {
+                page.drawLine({ start: { x, y }, end: { x: x + dx * cs, y }, thickness: ct, color: goldPrimary });
+                page.drawLine({ start: { x, y }, end: { x, y: y + dy * cs }, thickness: ct, color: goldPrimary });
+            };
+            drawCorner(22, height - 22, 1, -1); 
+            drawCorner(width - 22, height - 22, -1, -1); 
+            drawCorner(22, 22, 1, 1); 
+            drawCorner(width - 22, 22, -1, 1); 
 
-            // Box for Logo
-            page.drawRectangle({ x: 50, y: height - 65, width: 30, height: 30, color: violet, opacity: 0.1, borderColor: violet, borderWidth: 1 });
-            page.drawText("SY", { x: 55, y: height - 56, size: 14, font: monoBold, color: violet });
-            page.drawText("SHIPYARD LABS", { x: 90, y: height - 51, size: 12, font: monoBold, color: inkWhite });
-            page.drawText("// VERIFIED ENGINEERING NODE", { x: 90, y: height - 62, size: 8, font: mono, color: inkMuted });
-
-            // Top Right Hash
-            page.drawRectangle({ x: width - 210, y: height - 60, width: 160, height: 20, color: rgb(0.96, 0.62, 0.04), opacity: 0.1 });
-            page.drawText(`HASH: ${certId}`, { x: width - 195, y: height - 54, size: 10, font: monoBold, color: gold });
-
-            // Center Content
-            const centerText = (text, font, size, y, color = inkWhite) => {
-                const textWidth = font.widthOfTextAtSize(text, size);
-                page.drawText(text, { x: (width - textWidth) / 2, y, size, font, color });
+            const drawCentered = (text, font, size, y, color = textDark) => {
+                const tw = font.widthOfTextAtSize(text, size);
+                page.drawText(text, { x: (width - tw) / 2, y, size, font, color });
             };
 
-            const trackFullName = getTrackFullName(track);
+            const trackName = typeof getTrackFullName === 'function' ? getTrackFullName(track) : (track || "Full Stack Engineering");
 
-            centerText("CERTIFICATE OF", sansBold, 22, height - 160, inkMuted);
-            centerText("PRODUCTION DEPLOYMENT", sansBold, 38, height - 200, inkWhite);
+            // 4. Header Branding & Logo
+            page.drawRectangle({ x: 42, y: height - 64, width: 38, height: 38, color: accentPurple, borderColor: goldPrimary, borderWidth: 1.5 });
+            page.drawText("SY", { x: 51, y: height - 51, size: 14, font: monoBold, color: rgb(1,1,1) });
+            page.drawText("SHIPYARD LABS", { x: 90, y: height - 48, size: 12, font: monoBold, color: textDark });
+            page.drawText("// GLOBAL ELITE CERTIFICATION PROTOCOL", { x: 90, y: height - 60, size: 8, font: mono, color: textMuted });
 
-            centerText("THIS IMMUTABLE RECORD CERTIFIES THAT", mono, 11, height - 250, violet);
+            // Verification Pill
+            page.drawRectangle({ x: width - 285, y: height - 60, width: 240, height: 26, color: goldPrimary, opacity: 0.15, borderColor: goldPrimary, borderWidth: 1 });
+            page.drawText(`SECURE ID: ${certId} [VERIFIED]`, { x: width - 277, y: height - 51, size: 8.5, font: monoBold, color: goldDark });
 
-            // Dynamic Name
-            centerText(name.toUpperCase(), sansBold, 46, height - 320, inkWhite);
+            // 5. Main Typography Hierarchy with Balanced Spacing
+            drawCentered("CERTIFICATE OF ELITE COMPLETION", sansBold, 15, height - 125, goldPrimary);
+            drawCentered("PRODUCTION-GRADE ENGINEERING TRACK", sansBold, 26, height - 162, textDark);
+
+            drawCentered("THIS IS PROUDLY PRESENTED TO THE VERIFIED SCHOLAR", mono, 9.5, height - 210, textMuted);
+
+            const cleanName = (name || "Developer").toUpperCase();
+            drawCentered(cleanName, sansBold, 36, height - 268, textDark);
+
+            // Gold Underline
+            const nameW = sansBold.widthOfTextAtSize(cleanName, 36);
+            page.drawLine({ 
+                start: { x: (width - nameW) / 2 - 45, y: height - 280 }, 
+                end: { x: (width + nameW) / 2 + 45, y: height - 280 }, 
+                thickness: 2.5, 
+                color: goldPrimary 
+            });
+
+            drawCentered("Has successfully engineered, deployed, and shipped production application matrices", sans, 11, height - 325, textMuted);
+            drawCentered(`under the rigorous professional scope: ${trackName}`, sans, 11, height - 345, textMuted);
+
+            // 6. Signatures & Seal Badge
+            const sigBaseY = 55;
+
+            // Left Signature Block
+            page.drawLine({ start: { x: 75, y: sigBaseY + 45 }, end: { x: 265, y: sigBaseY + 45 }, thickness: 1.2, color: goldDim });
+            page.drawText("Abhay Pratap Singh", { x: 75, y: sigBaseY + 53, size: 11, font: monoBold, color: textDark });
+            page.drawText("Lead Systems Architect & Founder", { x: 75, y: sigBaseY + 31, size: 8.5, font: sans, color: textMuted });
+
+            // Professional Gold Award Seal
+            const sealX = width / 2;
+            const sealY = sigBaseY + 52;
+
+            for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 10) {
+                const sx = sealX + Math.cos(angle) * 40;
+                const sy = sealY + Math.sin(angle) * 40;
+                page.drawCircle({ x: sx, y: sy, size: 9, color: goldDim });
+            }
+
+            page.drawCircle({ x: sealX, y: sealY, size: 38, color: goldDark });
+            page.drawCircle({ x: sealX, y: sealY, size: 35, color: goldPrimary });
+            page.drawCircle({ x: sealX, y: sealY, size: 30, color: bgPaper, borderColor: goldPrimary, borderWidth: 2 });
             
-            // Underline under name
-            const nameWidth = sansBold.widthOfTextAtSize(name.toUpperCase(), 46);
-            page.drawLine({ start: { x: (width - nameWidth) / 2, y: height - 335 }, end: { x: (width + nameWidth) / 2, y: height - 335 }, thickness: 2, color: lineSoft });
+            page.drawText("OFFICIAL", { x: sealX - 22, y: sealY + 6, size: 7.5, font: monoBold, color: goldDark });
+            page.drawText("+ SEAL +", { x: sealX - 18, y: sealY - 2, size: 7.5, font: monoBold, color: goldDark });
+            page.drawText("CERTIFIED", { x: sealX - 21, y: sealY - 11, size: 6.5, font: mono, color: textMuted });
 
-            centerText(`Has successfully engineered, shipped, and deployed structural matrices`, sans, 14, height - 380, inkMuted);
-            centerText(`within the ${trackFullName} scope, adhering to strict production deadlines.`, sans, 14, height - 405, inkMuted);
+            // Right Signature Block
+            page.drawLine({ start: { x: width - 265, y: sigBaseY + 45 }, end: { x: width - 75, y: sigBaseY + 45 }, thickness: 1.2, color: goldDim });
+            page.drawText("Authorized Signatory", { x: width - 265, y: sigBaseY + 53, size: 11, font: monoBold, color: textDark });
+            page.drawText("Shipyard Labs Global", { x: width - 265, y: sigBaseY + 31, size: 8.5, font: sans, color: textMuted });
 
-            // Footer Section
-            page.drawText(`ISSUED: ${dateStr}`, { x: 60, y: 70, size: 11, font: mono, color: inkMuted });
-            
-            // Center signature block
-            page.drawLine({ start: { x: width/2 - 70, y: 85 }, end: { x: width/2 + 70, y: 85 }, thickness: 1, color: lineSoft });
-            centerText("SYSTEM AUTHENTICATED", monoBold, 10, 70, violet);
-            
-            // Bottom Right URL
-            page.drawText("shipyardlabs.dev", { x: width - 170, y: 70, size: 11, font: mono, color: inkMuted });
-
-            // Terminal line at the very bottom
-            const hashString = Array.from({length: 80}, () => Math.floor(Math.random()*16).toString(16)).join('');
-            page.drawText(`[root@shipyard]~$ verify-hash ${hashString}`, { x: 50, y: 35, size: 7, font: mono, color: rgb(0.2, 0.2, 0.25) });
+            // 7. Bottom Secure Footer
+            page.drawText(`ISSUED: ${dateStr}`, { x: 42, y: 25, size: 8.5, font: mono, color: textMuted });
+            page.drawText(`SECURE VERIFY: shipyardlabs.io/verify?id=${certId}&hash=sha256`, { x: width - 455, y: 25, size: 8.5, font: mono, color: goldDark });
 
             return pdfDoc.save();
         }
