@@ -843,17 +843,17 @@ try {
             page.drawRectangle({ x: 42, y: height - 64, width: 38, height: 38, color: accentPurple, borderColor: goldPrimary, borderWidth: 1.5 });
             page.drawText("SY", { x: 51, y: height - 51, size: 14, font: monoBold, color: rgb(1,1,1) });
             page.drawText("SHIPYARD LABS", { x: 90, y: height - 48, size: 12, font: monoBold, color: textDark });
-            page.drawText("// VERIFIED INTERNSHIP CREDENTIAL", { x: 90, y: height - 60, size: 8, font: mono, color: textMuted });
+            page.drawText("// GLOBAL ELITE CERTIFICATION PROTOCOL", { x: 90, y: height - 60, size: 8, font: mono, color: textMuted });
 
             // Security Pill
             page.drawRectangle({ x: width - 285, y: height - 60, width: 240, height: 26, color: goldPrimary, opacity: 0.15, borderColor: goldPrimary, borderWidth: 1 });
             page.drawText(`SECURE ID: ${certId} [VERIFIED]`, { x: width - 277, y: height - 51, size: 8.5, font: monoBold, color: goldDark });
 
             // 5. Main Typography Hierarchy
-            drawCentered("CERTIFICATE OF INTERNSHIP", sansBold, 15, height - 125, goldPrimary);
-            drawCentered("${track.toUpperCase()} INTERNSHIP", timesBold, 25, height - 162, textDark);
+            drawCentered("CERTIFICATE OF ELITE COMPLETION", sansBold, 15, height - 125, goldPrimary);
+            drawCentered("PRODUCTION-GRADE ENGINEERING TRACK", timesBold, 25, height - 162, textDark);
 
-            drawCentered("THIS IS PROUDLY PRESENTED TO", mono, 9.5, height - 208, textMuted);
+            drawCentered("THIS IS PROUDLY PRESENTED TO THE VERIFIED SCHOLAR", mono, 9.5, height - 208, textMuted);
 
             const cleanName = (name || "Developer").toUpperCase();
             drawCentered(cleanName, sansBold, 36, height - 264, textDark);
