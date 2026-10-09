@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <title>Submit Code Matrices — Shipyard Labs</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,8 +16,6 @@
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
-   
     
     <style>
         :root {
@@ -203,32 +201,35 @@
             
             <button class="btn btn-primary btn-full" id="submit-links-btn" style="margin-top:16px;">Push Submission to Master</button>
             <div class="status-msg" id="tasks-msg"></div>
-        </div><!-- PAYMENT WALL (UPI QR & UTR) -->
-<div class="card hidden" id="payment-card">
-    <h2>Final Verification & Processing Fee</h2>
-    <p class="desc">Scan the QR code below using any UPI app (GPay, PhonePe, Paytm) to pay ₹49.</p>
-    
-    <div class="qr-box" style="background: rgba(139, 92, 246, 0.05); border: 1px solid var(--primary-glow); border-radius: 10px; padding: 20px; margin-bottom: 24px; text-align: center;">
-        <p style="margin: 0; font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.5px;">SCAN QR TO PAY ₹49</p>
-        
-        <div class="qr-frame" style="display: inline-block; background: #ffffff; padding: 12px; border-radius: 8px; margin: 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-            <img id="upi-qrcode-img" 
-                 src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&data=upi%3A%2F%2Fpay%3Fpa%3D7068003894%40ptyes%26pn%3DShipyardLabs%26am%3D49%26cu%3DINR" 
-                 style="display: block; width: 150px; height: 150px; border: none;" 
-                 alt="UPI QR Code" />
         </div>
-        
-        <p style="margin: 0; font-size: 13px; color: var(--muted);">UPI ID: <strong style="color: var(--ink);">7068003894@ptyes</strong></p>
-    </div>
 
-    <div class="form-group" style="margin-bottom: 20px;">
-        <label for="utr-input">ENTER UPI REFERENCE / TRANSACTION ID (UTR)</label>
-        <input id="utr-input" type="text" placeholder="e.g. 4032xxxxxxxx" maxlength="20" />
-    </div>
+        <!-- PAYMENT WALL (UPI QR & UTR) -->
+        <div class="card hidden" id="payment-card">
+            <h2>Final Verification & Processing Fee</h2>
+            <p class="desc">Scan the QR code below using any UPI app (GPay, PhonePe, Paytm) to pay ₹49.</p>
+            
+            <div class="qr-box" style="background: rgba(139, 92, 246, 0.05); border: 1px solid var(--primary-glow); border-radius: 10px; padding: 20px; margin-bottom: 24px; text-align: center;">
+                <p style="margin: 0; font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.5px;">SCAN QR TO PAY ₹49</p>
+                
+                <div class="qr-frame" style="display: inline-block; background: #ffffff; padding: 12px; border-radius: 8px; margin: 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                    <img id="upi-qrcode-img" 
+                         src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&data=upi%3A%2F%2Fpay%3Fpa%3D7068003894%40ptyes%26pn%3DShipyardLabs%26am%3D49%26cu%3DINR" 
+                         style="display: block; width: 150px; height: 150px; border: none;" 
+                         alt="UPI QR Code" />
+                </div>
+                
+                <p style="margin: 0; font-size: 13px; color: var(--muted);">UPI ID: <strong style="color: var(--ink);">7068003894@ptyes</strong></p>
+            </div>
 
-    <button class="btn btn-primary btn-full" id="pay-now-btn">Verify Payment & Generate Certificate</button>
-    <div class="status-msg" id="payment-msg"></div>
-</div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="utr-input">ENTER UPI REFERENCE / TRANSACTION ID (UTR)</label>
+                <input id="utr-input" type="text" placeholder="e.g. 4032xxxxxxxx" maxlength="20" />
+            </div>
+
+            <button class="btn btn-primary btn-full" id="pay-now-btn">Verify Payment & Generate Certificate</button>
+            <div class="status-msg" id="payment-msg"></div>
+        </div>
+
         <!-- GENERATING -->
         <div class="card hidden" id="generating-card">
             <div class="cert-box">
@@ -263,10 +264,6 @@
             messagingSenderId: "678513496959",
             appId: "1:678513496959:web:9163a84e50ebe9d642004a"
         };
-
-        // EXPLICIT RAZORPAY KEY INTEGRATION
-        const RAZORPAY_KEY_ID = "rzp_test_TIZUIPS52bkAr1";
-        const VERIFICATION_FEE_PAISE = 4900; // ₹49 in paise
 
         const params = new URLSearchParams(window.location.search);
         const appId = params.get("app");
@@ -370,9 +367,6 @@
             currentTasks = tasks;
         }
 
-        // ==============================================================
-        // STRICT FIREWALL ROUTING (FIXED BYPASS ISSUE)
-        // ==============================================================
         function renderByStatus(app) {
             currentApp = app;
             
@@ -382,7 +376,6 @@
                 showOnly(els.tasksCard);
             } 
             else if (app.status === "submitted" || app.status === "waitlisted" || app.status === "certified") {
-                // VERY STRICT CHECK: No matter what, if paymentClaimed is NOT true, show ONLY Payment Card.
                 if (app.paymentClaimed !== true) {
                     setStepper(2);
                     showOnly(els.paymentCard);
@@ -394,7 +387,6 @@
                 }
             } 
             else {
-                // Fallback catch-all to tasks card
                 setStepper(1);
                 renderTasks(app.assignedTasks || []);
                 showOnly(els.tasksCard);
@@ -430,7 +422,6 @@
                 els.pageSub.textContent = `Session verified for engineer ${app.name}.`;
                 renderByStatus(app);
 
-                // Pre-generate certificate for download button IF legitimately certified
                 if (app.status === "certified" && app.paymentClaimed === true) {
                     const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
                     const pdfBytes = await buildCertificatePdf({ 
@@ -498,15 +489,13 @@
             els.tasksMsg.textContent = '';
             
             try {
-                // Update Firestore first
                 await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
                     submissionLinks: links,
                     submittedAt: fs.serverTimestamp(),
                     status: "submitted",
-                    paymentClaimed: false   // ✅ STRICTLY FALSE
+                    paymentClaimed: false
                 });
                 
-                // Refetch to prevent local object modification bypass
                 const freshSnap = await fs.getDoc(fs.doc(db, "applications", currentAppId));
                 renderByStatus(freshSnap.data());
                 
@@ -517,68 +506,61 @@
             }
         });
 
-        // ---------------------------------------------------------
-        // ₹49 REAL RAZORPAY PAYMENT (client-side checkout)
-        // ---------------------------------------------------------
-    // ---------------------------------------------------------
-// UPI QR & UTR VERIFICATION LOGIC
-// ---------------------------------------------------------
-els.payNowBtn.addEventListener('click', async () => {
-    if (!currentApp || !currentAppId) return;
+        els.payNowBtn.addEventListener('click', async () => {
+            if (!currentApp || !currentAppId) return;
 
-    const utrInput = document.getElementById('utr-input');
-    const utr = utrInput ? utrInput.value.trim() : "";
+            const utrInput = document.getElementById('utr-input');
+            const utr = utrInput ? utrInput.value.trim() : "";
 
-    if (!utr || utr.length < 8) {
-        els.paymentMsg.className = 'status-msg err';
-        els.paymentMsg.textContent = 'Please enter a valid UPI Transaction ID (UTR).';
-        return;
-    }
+            if (!utr || utr.length < 8) {
+                els.paymentMsg.className = 'status-msg err';
+                els.paymentMsg.textContent = 'Please enter a valid UPI Transaction ID (UTR).';
+                return;
+            }
 
-    els.payNowBtn.disabled = true;
-    els.payNowBtn.textContent = 'Verifying UTR & Generating Certificate…';
-    els.paymentMsg.textContent = '';
+            els.payNowBtn.disabled = true;
+            els.payNowBtn.textContent = 'Verifying UTR & Generating Certificate…';
+            els.paymentMsg.textContent = '';
 
-    try {
-        showOnly(els.generatingCard);
-        const certId = `CERT-${currentAppId.slice(0, 8).toUpperCase()}`;
-        const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
-        
-        const pdfBytes = await buildCertificatePdf({ 
-            name: currentApp.name, 
-            track: currentApp.track, 
-            certId, 
-            dateStr 
+            try {
+                showOnly(els.generatingCard);
+                const certId = `CERT-${currentAppId.slice(0, 8).toUpperCase()}`;
+                const dateStr = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+                
+                const pdfBytes = await buildCertificatePdf({ 
+                    name: currentApp.name, 
+                    track: currentApp.track, 
+                    certId, 
+                    dateStr 
+                });
+
+                await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
+                    paymentClaimed: true,
+                    status: "certified",
+                    certId,
+                    upiUtrId: utr,
+                    certifiedAt: fs.serverTimestamp(),
+                });
+
+                currentApp.status = "certified";
+                currentApp.paymentClaimed = true;
+                currentApp.certId = certId;
+
+                els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${certId}.pdf`);
+
+                setStepper(3);
+                els.certIdText.textContent = `HASH: ${certId}`;
+                showOnly(els.certifiedCard);
+                
+            } catch (err) {
+                console.error("Processing failed:", err);
+                els.paymentMsg.className = 'status-msg err';
+                els.paymentMsg.textContent = 'Error occurred: ' + err.message;
+                els.payNowBtn.disabled = false;
+                els.payNowBtn.textContent = 'Verify Payment & Generate Certificate';
+                showOnly(els.paymentCard);
+            }
         });
-
-        // Firestore me payment true aur status certified update karein
-        await fs.updateDoc(fs.doc(db, "applications", currentAppId), {
-            paymentClaimed: true,
-            status: "certified",
-            certId,
-            upiUtrId: utr,
-            certifiedAt: fs.serverTimestamp(),
-        });
-
-        currentApp.status = "certified";
-        currentApp.paymentClaimed = true;
-        currentApp.certId = certId;
-
-        els.certDownloadLink.onclick = () => downloadPdf(pdfBytes, `${certId}.pdf`);
-
-        setStepper(3);
-        els.certIdText.textContent = `HASH: ${certId}`;
-        showOnly(els.certifiedCard);
-        
-    } catch (err) {
-        console.error("Processing failed:", err);
-        els.paymentMsg.className = 'status-msg err';
-        els.paymentMsg.textContent = 'Error occurred: ' + err.message;
-        els.payNowBtn.disabled = false;
-        els.payNowBtn.textContent = 'Verify Payment & Generate Certificate';
-        showOnly(els.paymentCard);
-    }
-});
 
         // ---------------------------------------------------------
         // PDF GENERATION UTILITIES
@@ -639,7 +621,29 @@ els.payNowBtn.addEventListener('click', async () => {
             page.drawEllipse({ x: width - 40, y: height - 30, xScale: 140, yScale: 140, color: rgb(1, 1, 1), opacity: 0.05 });
             page.drawEllipse({ x: width + 40, y: height - headerH + 20, xScale: 110, yScale: 110, color: rgb(1, 1, 1), opacity: 0.06 });
             page.drawEllipse({ x: 30, y: height - headerH - 10, xScale: 90, yScale: 90, color: gold, opacity: 0.12 });
-
+try {
+    // 1. QR Code ke liye URL set karo (tum 'submitUrl' ya 'appId' use kar sakte ho)
+    const verifyUrl = submitUrl; // Ya fir: `https://internship-764c3.web.app/verify?id=${appId}`
+    
+    // 2. Client-side QR Data URL generate karo
+    const qrDataUrl = await QRCode.toDataURL(verifyUrl, { margin: 0 });
+    
+    // 3. Base64 ko arrayBuffer me convert karo taaki pdf-lib usko padh sake
+    const qrImageBytes = await fetch(qrDataUrl).then(res => res.arrayBuffer());
+    
+    // 4. Image ko tumhare existing 'pdfDoc' mein embed karo
+    const embeddedQr = await pdfDoc.embedPng(qrImageBytes);
+    
+    // 5. 'page' par draw karo (pdf-lib mein Y-axis bottom-left se start hota hai)
+    page.drawImage(embeddedQr, {
+        x: 40,       // Left se distance (adjust according to your border)
+        y: 40,       // Bottom se distance
+        width: 60,   // QR ki size
+        height: 60
+    });
+} catch (error) {
+    console.error("QR Code Embedding Failed:", error);
+}
             let hy = height - 44;
             drawRoundedRect(page, { x: 50, y: hy - 26, width: 32, height: 32, radius: 9, color: cardWhite });
             page.drawText('SY', { x: 59, y: hy - 17, size: 13, font: sansBold, color: violetDeep });
@@ -774,11 +778,7 @@ els.payNowBtn.addEventListener('click', async () => {
         }
 
         // ==============================================================
-        // 🔴 NEW CYBERPUNK DARK THEME CERTIFICATE GENERATOR
-        // ==============================================================
-  // ==============================================================
-   // ==============================================================
-        // 🏆 ULTIMATE PROFESSIONAL CERTIFICATE - PERFECT WATERMARK & SPACING
+        // 🏆 ULTIMATE 10X ELITE CERTIFICATE GENERATOR WITH QR CODE & SEAL
         // ==============================================================
         async function buildCertificatePdf({ name, track, certId, dateStr }) {
             const { PDFDocument, rgb, StandardFonts } = PDFLib;
@@ -788,26 +788,28 @@ els.payNowBtn.addEventListener('click', async () => {
 
             const sansBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
             const sans = await pdfDoc.embedFont(StandardFonts.Helvetica);
+            const timesBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+            const timesItalic = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
             const mono = await pdfDoc.embedFont(StandardFonts.Courier);
             const monoBold = await pdfDoc.embedFont(StandardFonts.CourierBold);
 
-            // Luxury Paper Palette
-            const bgPaper = rgb(0.98, 0.98, 0.96);      
+            // Palette
+            const bgPaper = rgb(0.98, 0.97, 0.94);      
             const goldPrimary = rgb(0.85, 0.65, 0.18);   
             const goldDim = rgb(0.68, 0.52, 0.14);      
             const goldDark = rgb(0.48, 0.36, 0.08);     
-            const textDark = rgb(0.12, 0.12, 0.18);     
-            const textMuted = rgb(0.45, 0.45, 0.52);    
+            const textDark = rgb(0.10, 0.10, 0.16);     
+            const textMuted = rgb(0.42, 0.42, 0.48);    
             const accentPurple = rgb(0.35, 0.15, 0.75); 
 
-            // 1. Background & Border Frame
+            // 1. Background & Multi-Layer Border Frame
             page.drawRectangle({ x: 0, y: 0, width, height, color: bgPaper });
             page.drawRectangle({ x: 16, y: 16, width: width - 32, height: height - 32, color: bgPaper, borderColor: goldPrimary, borderWidth: 2 });
             page.drawRectangle({ x: 22, y: 22, width: width - 44, height: height - 44, color: bgPaper, borderColor: accentPurple, borderWidth: 1 });
 
-            // 2. Clean Centered Background Watermark (Properly Positioned & Subtle)
+            // 2. Clean Centered Background Watermark ("10X ENGINEER")
             const watermarkText = "10X ENGINEER // SHIPYARD LABS";
-            const wmFontSize = 42;
+            const wmFontSize = 40;
             const wmWidth = monoBold.widthOfTextAtSize(watermarkText, wmFontSize);
             page.drawText(watermarkText, { 
                 x: (width - wmWidth) / 2, 
@@ -815,11 +817,11 @@ els.payNowBtn.addEventListener('click', async () => {
                 size: wmFontSize, 
                 font: monoBold, 
                 color: accentPurple, 
-                opacity: 0.035,
+                opacity: 0.038,
                 rotate: { type: 'degrees', angle: 15 }
             });
 
-            // 3. Elegant Gold Corner Accents
+            // 3. Elegant Gold Corner Ornaments
             const cs = 24, ct = 3;
             const drawCorner = (x, y, dx, dy) => {
                 page.drawLine({ start: { x, y }, end: { x: x + dx * cs, y }, thickness: ct, color: goldPrimary });
@@ -841,67 +843,94 @@ els.payNowBtn.addEventListener('click', async () => {
             page.drawRectangle({ x: 42, y: height - 64, width: 38, height: 38, color: accentPurple, borderColor: goldPrimary, borderWidth: 1.5 });
             page.drawText("SY", { x: 51, y: height - 51, size: 14, font: monoBold, color: rgb(1,1,1) });
             page.drawText("SHIPYARD LABS", { x: 90, y: height - 48, size: 12, font: monoBold, color: textDark });
-            page.drawText("// GLOBAL ELITE CERTIFICATION PROTOCOL", { x: 90, y: height - 60, size: 8, font: mono, color: textMuted });
+            page.drawText("// VERIFIED INTERNSHIP CREDENTIAL", { x: 90, y: height - 60, size: 8, font: mono, color: textMuted });
 
-            // Verification Pill
+            // Security Pill
             page.drawRectangle({ x: width - 285, y: height - 60, width: 240, height: 26, color: goldPrimary, opacity: 0.15, borderColor: goldPrimary, borderWidth: 1 });
             page.drawText(`SECURE ID: ${certId} [VERIFIED]`, { x: width - 277, y: height - 51, size: 8.5, font: monoBold, color: goldDark });
 
-            // 5. Main Typography Hierarchy with Balanced Spacing
-            drawCentered("CERTIFICATE OF ELITE COMPLETION", sansBold, 15, height - 125, goldPrimary);
-            drawCentered("PRODUCTION-GRADE ENGINEERING TRACK", sansBold, 26, height - 162, textDark);
+            // 5. Main Typography Hierarchy
+            drawCentered("CERTIFICATE OF INTERNSHIP", sansBold, 15, height - 125, goldPrimary);
+            drawCentered("${track.toUpperCase()} INTERNSHIP", timesBold, 25, height - 162, textDark);
 
-            drawCentered("THIS IS PROUDLY PRESENTED TO THE VERIFIED SCHOLAR", mono, 9.5, height - 210, textMuted);
+            drawCentered("THIS IS PROUDLY PRESENTED TO", mono, 9.5, height - 208, textMuted);
 
             const cleanName = (name || "Developer").toUpperCase();
-            drawCentered(cleanName, sansBold, 36, height - 268, textDark);
+            drawCentered(cleanName, sansBold, 36, height - 264, textDark);
 
-            // Gold Underline
+            // Gold Underline Accent
             const nameW = sansBold.widthOfTextAtSize(cleanName, 36);
             page.drawLine({ 
-                start: { x: (width - nameW) / 2 - 45, y: height - 280 }, 
-                end: { x: (width + nameW) / 2 + 45, y: height - 280 }, 
+                start: { x: (width - nameW) / 2 - 45, y: height - 276 }, 
+                end: { x: (width + nameW) / 2 + 45, y: height - 276 }, 
                 thickness: 2.5, 
                 color: goldPrimary 
             });
 
-            drawCentered("Has successfully engineered, deployed, and shipped production application matrices", sans, 11, height - 325, textMuted);
-            drawCentered(`under the rigorous professional scope: ${trackName}`, sans, 11, height - 345, textMuted);
+            drawCentered("Has successfully engineered, deployed, and shipped production application matrices", sans, 11, height - 320, textMuted);
+            drawCentered(`under the rigorous professional scope: ${trackName}`, sans, 11, height - 340, textMuted);
 
-            // 6. Signatures & Seal Badge
-            const sigBaseY = 55;
+            // 6. Signatures & Gear Seal Badge
+            const sigBaseY = 60;
 
             // Left Signature Block
-            page.drawLine({ start: { x: 75, y: sigBaseY + 45 }, end: { x: 265, y: sigBaseY + 45 }, thickness: 1.2, color: goldDim });
-            page.drawText("Abhay Pratap Singh", { x: 75, y: sigBaseY + 53, size: 11, font: monoBold, color: textDark });
-            page.drawText("Lead Systems Architect & Founder", { x: 75, y: sigBaseY + 31, size: 8.5, font: sans, color: textMuted });
+            page.drawText("Abhay Pratap Singh", { x: 135, y: sigBaseY + 58, size: 16, font: timesItalic, color: textDark });
+            page.drawLine({ start: { x: 120, y: sigBaseY + 48 }, end: { x: 280, y: sigBaseY + 48 }, thickness: 1.2, color: goldDim });
+            page.drawText("Lead Systems Architect & Founder", { x: 120, y: sigBaseY + 32, size: 9, font: sans, color: textMuted });
+            page.drawText("Shipyard Labs", { x: 120, y: sigBaseY + 18, size: 8.5, font: mono, color: textDark });
 
-            // Professional Gold Award Seal
+            // Professional Gear Seal (Bottom Center)
             const sealX = width / 2;
-            const sealY = sigBaseY + 52;
+            const sealY = sigBaseY + 55;
 
-            for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 10) {
-                const sx = sealX + Math.cos(angle) * 40;
-                const sy = sealY + Math.sin(angle) * 40;
-                page.drawCircle({ x: sx, y: sy, size: 9, color: goldDim });
+            for (let i = 0; i < 24; i++) {
+                const rad = (i * Math.PI) / 12;
+                page.drawLine({
+                    start: { x: sealX + Math.cos(rad) * 32, y: sealY + Math.sin(rad) * 32 },
+                    end: { x: sealX + Math.cos(rad) * 40, y: sealY + Math.sin(rad) * 40 },
+                    thickness: 3,
+                    color: goldPrimary
+                });
             }
 
-            page.drawCircle({ x: sealX, y: sealY, size: 38, color: goldDark });
-            page.drawCircle({ x: sealX, y: sealY, size: 35, color: goldPrimary });
-            page.drawCircle({ x: sealX, y: sealY, size: 30, color: bgPaper, borderColor: goldPrimary, borderWidth: 2 });
+            page.drawCircle({ x: sealX, y: sealY, size: 36, color: goldDark });
+            page.drawCircle({ x: sealX, y: sealY, size: 33, color: goldPrimary });
+            page.drawCircle({ x: sealX, y: sealY, size: 28, color: bgPaper, borderColor: goldPrimary, borderWidth: 1.5 });
             
-            page.drawText("OFFICIAL", { x: sealX - 22, y: sealY + 6, size: 7.5, font: monoBold, color: goldDark });
-            page.drawText("+ SEAL +", { x: sealX - 18, y: sealY - 2, size: 7.5, font: monoBold, color: goldDark });
-            page.drawText("CERTIFIED", { x: sealX - 21, y: sealY - 11, size: 6.5, font: mono, color: textMuted });
+            page.drawText("10X", { x: sealX - 12, y: sealY + 5, size: 12, font: timesBold, color: goldDark });
+            page.drawText("VERIFIED", { x: sealX - 18, y: sealY - 8, size: 6.5, font: monoBold, color: textMuted });
 
             // Right Signature Block
-            page.drawLine({ start: { x: width - 265, y: sigBaseY + 45 }, end: { x: width - 75, y: sigBaseY + 45 }, thickness: 1.2, color: goldDim });
-            page.drawText("Authorized Signatory", { x: width - 265, y: sigBaseY + 53, size: 11, font: monoBold, color: textDark });
-            page.drawText("Shipyard Labs Global", { x: width - 265, y: sigBaseY + 31, size: 8.5, font: sans, color: textMuted });
+            page.drawText("Tech Lead", { x: width - 250, y: sigBaseY + 58, size: 16, font: timesItalic, color: textDark });
+            page.drawLine({ start: { x: width - 280, y: sigBaseY + 48 }, end: { x: width - 120, y: sigBaseY + 48 }, thickness: 1.2, color: goldDim });
+            page.drawText("Authorized Signatory", { x: width - 280, y: sigBaseY + 32, size: 9, font: sans, color: textMuted });
+            page.drawText("Shipyard Engineering Board", { x: width - 280, y: sigBaseY + 18, size: 8.5, font: mono, color: textDark });
 
-            // 7. Bottom Secure Footer
-            page.drawText(`ISSUED: ${dateStr}`, { x: 42, y: 25, size: 8.5, font: mono, color: textMuted });
-            page.drawText(`SECURE VERIFY: shipyardlabs.io/verify?id=${certId}&hash=sha256`, { x: width - 455, y: 25, size: 8.5, font: mono, color: goldDark });
+            // 7. Dynamic QR Code Verification (Bottom Left)
+            try {
+                const verifyUrl = `https://internship-764c3.web.app/submit.html?cert=${certId}`;
+                const qrDataUrl = await QRCode.toDataURL(verifyUrl, { 
+                    margin: 1, 
+                    width: 200, 
+                    color: { dark: '#0e0e18', light: '#ffffff' } 
+                });
+                const qrBytes = await fetch(qrDataUrl).then(r => r.arrayBuffer());
+                const qrImage = await pdfDoc.embedPng(qrBytes);
+                
+                const qrSize = 54;
+                page.drawRectangle({
+                    x: 40, y: sigBaseY + 5, width: qrSize + 8, height: qrSize + 8,
+                    color: rgb(1, 1, 1), borderColor: goldPrimary, borderWidth: 1
+                });
+                page.drawImage(qrImage, { x: 44, y: sigBaseY + 9, width: qrSize, height: qrSize });
+                page.drawText("SCAN TO VERIFY", { x: 40, y: sigBaseY - 6, size: 6.5, font: monoBold, color: goldDark });
+            } catch (qrErr) {
+                console.error("Certificate QR Error:", qrErr);
+            }
+
+            // 8. Bottom Secure Footer Info
+            page.drawText(`ISSUED: ${dateStr}`, { x: width - 180, y: 25, size: 8, font: mono, color: textMuted });
+            page.drawText(`CREDENTIAL: https://internship-764c3.web.app/verify?id=${certId}`, { x: width / 2 - 120, y: 25, size: 8, font: mono, color: goldDark });
 
             return pdfDoc.save();
         }
